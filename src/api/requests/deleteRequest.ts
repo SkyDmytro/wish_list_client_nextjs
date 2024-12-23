@@ -5,6 +5,7 @@ export const deleteRequest = async (url: string) => {
       'Content-Type': 'application/json',
       Cookie: `jwt=${localStorage.getItem('jwt')}`,
     },
+    credentials: 'include',
   });
   return response.json();
 };

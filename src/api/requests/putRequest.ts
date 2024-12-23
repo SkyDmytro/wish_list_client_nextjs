@@ -6,6 +6,7 @@ export const putRequest = async (url: string, body: Record<string, string>) => {
       Cookie: `jwt=${localStorage.getItem('jwt')}`,
     },
     body: JSON.stringify(body),
+    credentials: 'include',
   });
   return response.json();
 };

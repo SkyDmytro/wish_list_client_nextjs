@@ -1,0 +1,27 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+import { isPublicRoute } from './routes';
+
+// Middleware для API запросов
+export function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+
+  if (!isPublicRoute(path)) {
+    const token = request.cookies.get('jwt')?.value;
+    console.log('token', token);
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
+  console.log('path', path);
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    // Все остальные маршруты
+    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+  ],
+};

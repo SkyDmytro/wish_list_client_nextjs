@@ -1,4 +1,4 @@
-const WishlistsPage = ({ params }: { params: { id: string } }) => {
+const WishlistsPage = async ({ params }: { params: { id: string } }) => {
   return <div>WishlistsPage {params.id}</div>;
 };
 

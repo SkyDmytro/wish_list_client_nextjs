@@ -44,15 +44,12 @@ export const publicRoutes: RouteConfig[] = [
 ];
 
 export function isPublicRoute(path: string): boolean {
-  console.log('path', path);
   return publicRoutes.some((route) => {
     if (!route.dynamic && route.path === path) {
-      console.log('route.path', route.path);
       return true;
     }
 
     if (route.dynamic && route.pattern) {
-      console.log('route.pattern', route.pattern);
       return route.pattern.test(path);
     }
 

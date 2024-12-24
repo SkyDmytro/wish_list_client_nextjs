@@ -8,12 +8,10 @@ export function middleware(request: NextRequest) {
 
   if (!isPublicRoute(path)) {
     const token = request.cookies.get('jwt')?.value;
-    console.log('token', token);
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }
-  console.log('path', path);
 
   return NextResponse.next();
 }

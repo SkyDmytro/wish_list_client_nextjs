@@ -1,5 +1,5 @@
-const UserPage = ({ params }: { params: { id: string } }) => {
-  return <div>UserPage {params.id}</div>;
+const Page = ({ params }: { params: { id: string } }) => {
+  return <div key="user-page">UserPage {params.id}</div>;
 };
 
-export default UserPage;
+export default Page;

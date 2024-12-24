@@ -3,7 +3,6 @@ import type { NextRequest } from 'next/server';
 
 import { isPublicRoute } from './routes';
 
-// Middleware для API запросов
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
@@ -20,8 +19,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    // Все остальные маршруты
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|public).*)'],
 };

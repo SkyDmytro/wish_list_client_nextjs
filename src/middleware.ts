@@ -6,6 +6,10 @@ import { isPublicRoute } from './routes';
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
+  if (path === '/') {
+    return NextResponse.redirect(new URL('/home', request.url));
+  }
+
   if (!isPublicRoute(path)) {
     const token = request.cookies.get('jwt')?.value;
     if (!token) {

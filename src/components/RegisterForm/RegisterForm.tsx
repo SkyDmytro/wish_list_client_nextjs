@@ -37,7 +37,6 @@ export const RegisterForm = () => {
       localStorage.setItem('jwt', response.token);
       router.push(`/users/${response._id}`);
     } catch (e) {
-      console.error(e);
       throw new Error(e instanceof Error ? e.message : 'An error occurred');
     }
   }

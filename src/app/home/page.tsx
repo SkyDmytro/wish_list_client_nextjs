@@ -2,19 +2,19 @@ import Link from 'next/link';
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-900 to-blue-800 text-white">
+    <main className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-6">
-            Welcome to <span className="text-sky-300">SkyWishes</span>
+            Welcome to <span className="text-gray-300">SkyWishes</span>
           </h1>
-          <p className="text-xl text-blue-100 mb-8">
+          <p className="text-xl text-gray-300 mb-8">
             Create, organize, and share your wishes with loved ones
           </p>
           <Link
             href="/login"
-            className="bg-sky-500 hover:bg-sky-600 text-white px-8 py-3 rounded-lg 
+            className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-lg 
                      transition-colors duration-200 inline-block"
           >
             Start Wishing
@@ -54,10 +54,10 @@ function FeatureCard({
   icon: string;
 }) {
   return (
-    <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg hover:bg-white/20 transition-colors duration-200">
+    <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg hover:bg-white/10 transition-colors duration-200">
       <div className="text-4xl mb-4">{icon}</div>
-      <h3 className="text-xl font-semibold mb-2 text-sky-200">{title}</h3>
-      <p className="text-blue-100">{description}</p>
+      <h3 className="text-xl font-semibold mb-2 text-gray-300">{title}</h3>
+      <p className="text-gray-400">{description}</p>
     </div>
   );
 }

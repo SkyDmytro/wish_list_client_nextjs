@@ -3,9 +3,8 @@ import { Header } from '@/components/Header/Header';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Wish List',
-  description:
-    'Wish List App - Create your wish list and share with your friends',
+  title: 'SkyWishes - User Profile',
+  description: 'SkyWishes - View and manage your user profile',
 };
 
 export default function RootLayout({
@@ -14,11 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        <Header />
-        {children}
-      </body>
-    </html>
+    <main>
+      <Header />
+      {children}
+    </main>
   );
 }

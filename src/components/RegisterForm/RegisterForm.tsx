@@ -1,6 +1,7 @@
 'use client';
 
 import { registerUserRequest } from '@/api/register/registerUserRequest';
+import { useToast } from '@/hooks/use-toast';
 import { registerSchema } from '@/schemas/userRegister.schema';
 
 import { FormEvent, useState } from 'react';
@@ -14,6 +15,7 @@ import { Label } from '../ui/label';
 export const RegisterForm = () => {
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const router = useRouter();
+  const { toast } = useToast();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,7 +27,6 @@ export const RegisterForm = () => {
     const password = formData.get('password');
 
     const parsed = registerSchema.safeParse({ name, email, password });
-    console.log(parsed);
     if (!parsed.success) {
       const zodErrors = parsed.error.flatten().fieldErrors;
       setErrors(zodErrors);
@@ -34,7 +35,10 @@ export const RegisterForm = () => {
 
     try {
       await registerUserRequest(parsed.data);
-      // localStorage.setItem('jwt', response.token);
+      toast({
+        title: 'Success',
+        description: 'User registered successfully, please log in',
+      });
       router.push(`/login`);
     } catch (e) {
       throw new Error(e instanceof Error ? e.message : 'An error occurred');

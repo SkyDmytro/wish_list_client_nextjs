@@ -1,6 +1,5 @@
 'use client';
 
-import { loginUserRequest } from '@/api/login/loginUserRequest';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,11 +7,10 @@ import { loginSchema } from '@/schemas/userLogin.schema';
 
 import { FormEvent, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 export default function LoginForm() {
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
-  const router = useRouter();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,9 +28,12 @@ export default function LoginForm() {
     }
 
     try {
-      const response = await loginUserRequest(parsed.data);
-      localStorage.setItem('jwt', response.token);
-      router.push(`/users/${response._id}`);
+      // const response = await loginUserRequest(parsed.data);
+      await signIn('credentials', {
+        email: email,
+        password: password,
+        redirect: '/users/',
+      });
     } catch (e) {
       setErrors({
         email: ['Invalid email or password'],

@@ -1,4 +1,5 @@
 import { Header } from '@/components/Header/Header';
+import { Toast } from '@/components/ui/toast';
 
 import type { Metadata } from 'next';
 
@@ -16,6 +17,7 @@ export default function RootLayout({
     <main>
       <Header />
       {children}
+      <Toast />
     </main>
   );
 }

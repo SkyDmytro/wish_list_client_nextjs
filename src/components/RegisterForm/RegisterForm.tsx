@@ -1,6 +1,7 @@
 'use client';
 
 import { registerUserRequest } from '@/api/register/registerUserRequest';
+import { useToast } from '@/hooks/use-toast';
 import { registerSchema } from '@/schemas/userRegister.schema';
 
 import { FormEvent, useState } from 'react';
@@ -14,6 +15,7 @@ import { Label } from '../ui/label';
 export const RegisterForm = () => {
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const router = useRouter();
+  const { toast } = useToast();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,7 +27,6 @@ export const RegisterForm = () => {
     const password = formData.get('password');
 
     const parsed = registerSchema.safeParse({ name, email, password });
-    console.log(parsed);
     if (!parsed.success) {
       const zodErrors = parsed.error.flatten().fieldErrors;
       setErrors(zodErrors);
@@ -33,9 +34,12 @@ export const RegisterForm = () => {
     }
 
     try {
-      const response = await registerUserRequest(parsed.data);
-      localStorage.setItem('jwt', response.token);
-      router.push(`/users/${response._id}`);
+      await registerUserRequest(parsed.data);
+      toast({
+        title: 'Success',
+        description: 'User registered successfully, please log in',
+      });
+      router.push(`/login`);
     } catch (e) {
       throw new Error(e instanceof Error ? e.message : 'An error occurred');
     }
@@ -46,7 +50,7 @@ export const RegisterForm = () => {
         <div>
           <Label
             className={`text-sm font-medium ${
-              errors.name ? 'text-red-700' : 'text-gray-700'
+              errors.name ? 'text-red-400' : 'text-gray-300'
             }`}
             htmlFor="name"
           >
@@ -57,15 +61,15 @@ export const RegisterForm = () => {
             name="name"
             placeholder="Enter your name"
             required
-            className={`mt-1 block w-full rounded-md shadow-sm 
+            className={`mt-1 block w-full rounded-md shadow-sm bg-gray-800 text-white placeholder-gray-400
                   ${
                     errors.name
                       ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
-                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                      : 'border-gray-600 focus:ring-indigo-500 focus:border-indigo-500'
                   }`}
           />
           {errors.name?.map((error, index) => (
-            <p key={index} className="mt-1 text-sm text-red-600">
+            <p key={index} className="mt-1 text-sm text-red-400">
               {error}
             </p>
           ))}
@@ -74,7 +78,7 @@ export const RegisterForm = () => {
         <div>
           <Label
             className={`text-sm font-medium ${
-              errors.email ? 'text-red-700' : 'text-gray-700'
+              errors.email ? 'text-red-400' : 'text-gray-300'
             }`}
             htmlFor="email"
           >
@@ -85,15 +89,15 @@ export const RegisterForm = () => {
             name="email"
             placeholder="Enter your email"
             required
-            className={`mt-1 block w-full rounded-md shadow-sm 
+            className={`mt-1 block w-full rounded-md shadow-sm bg-gray-800 text-white placeholder-gray-400
                   ${
                     errors.email
                       ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
-                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                      : 'border-gray-600 focus:ring-indigo-500 focus:border-indigo-500'
                   }`}
           />
           {errors.email?.map((error, index) => (
-            <p key={index} className="mt-1 text-sm text-red-600">
+            <p key={index} className="mt-1 text-sm text-red-400">
               {error}
             </p>
           ))}
@@ -102,7 +106,7 @@ export const RegisterForm = () => {
         <div>
           <Label
             className={`text-sm font-medium ${
-              errors.password ? 'text-red-700' : 'text-gray-700'
+              errors.password ? 'text-red-400' : 'text-gray-300'
             }`}
             htmlFor="password"
           >
@@ -113,15 +117,15 @@ export const RegisterForm = () => {
             name="password"
             placeholder="Create a password"
             required
-            className={`mt-1 block w-full rounded-md shadow-sm 
+            className={`mt-1 block w-full rounded-md shadow-sm bg-gray-800 text-white placeholder-gray-400
                   ${
                     errors.password
                       ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
-                      : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'
+                      : 'border-gray-600 focus:ring-indigo-500 focus:border-indigo-500'
                   }`}
           />
           {errors.password?.map((error, index) => (
-            <p key={index} className="mt-1 text-sm text-red-600">
+            <p key={index} className="mt-1 text-sm text-red-400">
               {error}
             </p>
           ))}
@@ -134,6 +138,17 @@ export const RegisterForm = () => {
       >
         Create Account
       </Button>
+      <div className="text-center">
+        <span className="text-sm text-gray-300">
+          Already have an account?{' '}
+          <a
+            href="/login"
+            className="font-medium text-indigo-400 hover:text-indigo-300"
+          >
+            Login here
+          </a>
+        </span>
+      </div>
     </form>
   );
 };

@@ -1,4 +1,8 @@
+import { Toaster } from '@/components/ui/toaster';
+
+import { ToastProvider } from '@radix-ui/react-toast';
 import type { Metadata } from 'next';
+import { SessionProvider } from 'next-auth/react';
 import localFont from 'next/font/local';
 
 import './globals.css';
@@ -30,7 +34,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <SessionProvider>
+          <ToastProvider>
+            {children}
+            <Toaster />
+          </ToastProvider>
+        </SessionProvider>
       </body>
     </html>
   );

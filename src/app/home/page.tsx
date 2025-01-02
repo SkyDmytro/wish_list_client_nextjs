@@ -4,7 +4,6 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
       <div className="container mx-auto px-4 py-16">
-        {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-6">
             Welcome to <span className="text-gray-300">SkyWishes</span>
@@ -21,7 +20,6 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Features Grid */}
         <div className="grid md:grid-cols-3 gap-8 mt-16">
           <FeatureCard
             title="Create Lists"

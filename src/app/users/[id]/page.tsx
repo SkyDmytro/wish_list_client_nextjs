@@ -1,5 +1,9 @@
+import { auth } from '@/auth/authSetup';
+
 const Page = async ({ params }: { params: { id: string } }) => {
   // const id = await params.id;
+  const ses = await auth();
+  console.log(ses);
   return (
     <div
       key="user-page"

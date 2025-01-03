@@ -18,6 +18,10 @@ export default auth((req) => {
     const newUrl = new URL(`/users/${req.auth.user._id}`, req.nextUrl.origin);
     return Response.redirect(newUrl);
   }
+  if (req.nextUrl.pathname === '/') {
+    const newUrl = new URL(`/home`, req.nextUrl.origin);
+    return Response.redirect(newUrl);
+  }
 });
 // export function middleware(request: NextRequest) {
 //   const path = request.nextUrl.pathname;

@@ -8,6 +8,7 @@ import { FormEvent, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { OAuthComponent } from '../OAuthComponents/OAuthComponent';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -138,6 +139,7 @@ export const RegisterForm = () => {
       >
         Create Account
       </Button>
+      <OAuthComponent />
       <div className="text-center">
         <span className="text-sm text-gray-300">
           Already have an account?{' '}

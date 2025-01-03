@@ -9,6 +9,8 @@ import { FormEvent, useState } from 'react';
 
 import { signIn } from 'next-auth/react';
 
+import { OAuthComponent } from '../OAuthComponents/OAuthComponent';
+
 export default function LoginForm() {
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
 
@@ -110,6 +112,7 @@ export default function LoginForm() {
         Sign in
       </Button>
 
+      <OAuthComponent />
       <div className="text-center">
         <span className="text-sm text-gray-300">
           Don&apos;t have an account?{' '}

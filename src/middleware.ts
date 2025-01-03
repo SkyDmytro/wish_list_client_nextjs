@@ -15,7 +15,14 @@ export default auth((req) => {
     return Response.redirect(newUrl);
   }
   if (req.auth && req.nextUrl.pathname === '/login') {
-    const newUrl = new URL(`/users/${req.auth.user._id}`, req.nextUrl.origin);
+    const newUrl = new URL(
+      `/users/${req.auth.user._id || req.auth.user?.id}`,
+      req.nextUrl.origin,
+    );
+    return Response.redirect(newUrl);
+  }
+  if (req.nextUrl.pathname === '/') {
+    const newUrl = new URL(`/home`, req.nextUrl.origin);
     return Response.redirect(newUrl);
   }
 });

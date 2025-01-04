@@ -1,15 +1,14 @@
 'use client';
 
-import decodeJWT from '@/utils/decodeJwt';
-
-import { Gift, Search, User } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { Gift, User } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 export const Header = () => {
-  // TODO: get user id from User Store not from local storage
-  const token = localStorage.getItem('jwt');
-  const id = token ? decodeJWT(token)._id : null;
+  const { data: session } = useSession();
+  console.log('session', session);
+  const userId = session?.user?._id || session?.user?.id;
+
   return (
     <header className="flex items-center justify-between p-4 bg-gray-900 text-white">
       <div className="flex items-center gap-2">
@@ -19,10 +18,11 @@ export const Header = () => {
         </h1>
       </div>
       <div className="flex items-center gap-2">
-        <Link href="/search">
+        {/* <Link href="/search">
           <Search />
-        </Link>
-        <Link href={`/users/${id}/wishlists`}>
+        </Link> */}
+        <Link href={`/users/${userId}/wishlists`} className="flex gap-2 ">
+          My Lists
           <Gift />
         </Link>
         <div
@@ -31,8 +31,11 @@ export const Header = () => {
             signOut();
           }}
         >
-          <User />
+          Sign Out
         </div>
+        <Link href={`/users/${userId}`}>
+          <User />
+        </Link>
       </div>
     </header>
   );

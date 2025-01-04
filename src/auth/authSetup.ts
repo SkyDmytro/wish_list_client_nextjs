@@ -25,6 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           });
 
           const user = await res.json();
+          // console.log('user', user);
           if (res.ok && user.token) {
             return user;
           }
@@ -38,22 +39,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    authorized: async ({ auth }) => {
-      // Logged in users are authenticated, otherwise redirect to login page
-
-      return !!auth;
-    },
     async jwt({ token, user }) {
       if (user) {
         token.user = user;
+        token.accessToken = user.token;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user = token.user as unknown;
+      session.user = token.user;
+      session.accessToken = token.accessToken;
       return session;
     },
   },
+
   pages: {
     signIn: '/login',
     // signOut: '/login',

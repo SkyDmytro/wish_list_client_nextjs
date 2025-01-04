@@ -1,15 +1,24 @@
 'use client';
 
-import decodeJWT from '@/utils/decodeJwt';
+import '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
-import { Gift, Search, User } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
+import { Gift, LogOut, User } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
+import { Button } from '../ui/button';
+
 export const Header = () => {
-  // TODO: get user id from User Store not from local storage
-  const token = localStorage.getItem('jwt');
-  const id = token ? decodeJWT(token)._id : null;
+  const { data: session } = useSession();
+  const userId = session?.user?._id || session?.user?.id;
+
   return (
     <header className="flex items-center justify-between p-4 bg-gray-900 text-white">
       <div className="flex items-center gap-2">
@@ -19,20 +28,62 @@ export const Header = () => {
         </h1>
       </div>
       <div className="flex items-center gap-2">
-        <Link href="/search">
-          <Search />
-        </Link>
-        <Link href={`/users/${id}/wishlists`}>
-          <Gift />
-        </Link>
-        <div
-          className="flex items-center gap-2"
-          onClick={() => {
-            signOut();
-          }}
+        <Button
+          variant="ghost"
+          size="default"
+          className="relative rounded-full "
         >
-          <User />
-        </div>
+          <Link
+            href={`/users/${userId}/wishlists`}
+            className="flex gap-2 items-center "
+          >
+            My Lists
+            <Gift />
+          </Link>
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative rounded-full"
+            >
+              <User className="h-full w-full" />
+              <span className="sr-only">Open user menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/users/${userId}`}
+                className="flex w-full cursor-pointer items-center"
+              >
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/users/${userId}/wishlists`}
+                className="flex w-full cursor-pointer items-center sm:hidden"
+              >
+                <Gift className="mr-2 h-4 w-4" />
+                My Lists
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                signOut();
+              }}
+              className="flex cursor-pointer items-center text-red-500 focus:text-red-500"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

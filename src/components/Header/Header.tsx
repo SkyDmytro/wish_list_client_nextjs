@@ -1,12 +1,22 @@
 'use client';
 
-import { Gift, User } from 'lucide-react';
+import '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
+import { Gift, LogOut, User } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
+import { Button } from '../ui/button';
+
 export const Header = () => {
   const { data: session } = useSession();
-  console.log('session', session);
   const userId = session?.user?._id || session?.user?.id;
 
   return (
@@ -18,24 +28,62 @@ export const Header = () => {
         </h1>
       </div>
       <div className="flex items-center gap-2">
-        {/* <Link href="/search">
-          <Search />
-        </Link> */}
-        <Link href={`/users/${userId}/wishlists`} className="flex gap-2 ">
-          My Lists
-          <Gift />
-        </Link>
-        <div
-          className="flex items-center gap-2"
-          onClick={() => {
-            signOut();
-          }}
+        <Button
+          variant="ghost"
+          size="default"
+          className="relative rounded-full "
         >
-          Sign Out
-        </div>
-        <Link href={`/users/${userId}`}>
-          <User />
-        </Link>
+          <Link
+            href={`/users/${userId}/wishlists`}
+            className="flex gap-2 items-center "
+          >
+            My Lists
+            <Gift />
+          </Link>
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative rounded-full"
+            >
+              <User className="h-full w-full" />
+              <span className="sr-only">Open user menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/users/${userId}`}
+                className="flex w-full cursor-pointer items-center"
+              >
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/users/${userId}/wishlists`}
+                className="flex w-full cursor-pointer items-center sm:hidden"
+              >
+                <Gift className="mr-2 h-4 w-4" />
+                My Lists
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                signOut();
+              }}
+              className="flex cursor-pointer items-center text-red-500 focus:text-red-500"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

@@ -1,9 +1,9 @@
-export const getRequest = async (url: string) => {
+export const getRequest = async (url: string, token?: string) => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Cookie: `jwt=${localStorage.getItem('jwt')}`,
+      Cookie: `jwt=${token}`,
     },
     credentials: 'include',
   });

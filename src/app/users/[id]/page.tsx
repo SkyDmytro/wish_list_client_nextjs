@@ -22,21 +22,6 @@ const Page = async ({ params }: { params: { id: string } }) => {
   )
     .then((res) => res)
     .catch((e) => console.log(e));
-  // await fetch(
-  //   `${API_URL}${wishlistUrl}/${userId}/user`,
-  //   {
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Cookie: `jwt=${session?.user?.token}`,
-  //     },
-  //     credentials: 'include',
-  //   },
-  // )
-  //   .then((res) => res.json())
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
 
   console.log(user);
 

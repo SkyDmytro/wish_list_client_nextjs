@@ -1,4 +1,7 @@
-export const getRequest = async (url: string, token?: string) => {
+export const getRequest = async <T>(
+  url: string,
+  token?: string,
+): Promise<T> => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
@@ -7,5 +10,5 @@ export const getRequest = async (url: string, token?: string) => {
     },
     credentials: 'include',
   });
-  return response.json();
+  return (await response.json()) as Promise<T>;
 };

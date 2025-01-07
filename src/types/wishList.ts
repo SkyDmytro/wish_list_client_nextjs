@@ -6,3 +6,8 @@ export type wishList = {
   updatedAt?: string;
   __v?: number;
 };
+
+export type wishListResponse = {
+  items: wishList[];
+  meta: unknown;
+};

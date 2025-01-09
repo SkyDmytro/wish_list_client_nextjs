@@ -23,8 +23,6 @@ const Page = async ({ params }: { params: { id: string } }) => {
     .then((res) => res)
     .catch((e) => console.log(e));
 
-  console.log(user);
-
   return (
     <UserPage userProps={user} friends={[]} wishlists={wishLists.items || []} />
   );

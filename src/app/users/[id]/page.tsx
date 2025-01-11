@@ -23,10 +23,17 @@ const Page = async ({ params }: { params: { id: string } }) => {
     .then((res) => res)
     .catch((e) => console.log(e));
 
-  console.log(user);
+  const friends = await getRequest<UserType[]>(
+    `${API_URL}/api/users/${userId}/friends`,
+    session?.user?.token,
+  );
 
   return (
-    <UserPage userProps={user} friends={[]} wishlists={wishLists.items || []} />
+    <UserPage
+      userProps={user || {}}
+      friends={friends || []}
+      wishlists={wishLists.items || []}
+    />
   );
 };
 

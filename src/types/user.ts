@@ -22,4 +22,5 @@ export type UserType = {
   createdAt: string;
   updatedAt: string;
   __v: number;
+  token?: string;
 };

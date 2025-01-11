@@ -23,10 +23,8 @@ export const FriendsSection = ({
           >
             <div className="h-10 w-10 rounded-full bg-gray-800"></div>
             <div>
-              <p className="text-sm font-medium text-white">
-                Friend {friend.name}
-              </p>
-              <p className="text-xs text-gray-400">2 mutual friends</p>
+              <p className="text-sm font-medium text-white">Friend</p>
+              <p className="text-xs text-gray-400">{friend.name}</p>
             </div>
           </div>
         ))}

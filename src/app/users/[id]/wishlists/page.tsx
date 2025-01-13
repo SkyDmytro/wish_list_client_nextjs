@@ -7,7 +7,7 @@ import { API_URL, wishlistUrl } from '@/utils/config';
 
 const WishlistsPage = async ({ params }: { params: { id: string } }) => {
   const userId = await params.id;
-  const authUser = await auth().then((res) => res.user);
+  const authUser = await auth().then((res) => res.user as UserType);
   const isUserTheOwner = authUser?._id === userId;
   const user = await getRequest<UserType>(
     `${API_URL}/api/users/profile/${userId}`,
@@ -25,8 +25,10 @@ const WishlistsPage = async ({ params }: { params: { id: string } }) => {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center">
-        <h1 className="text-2xl font-semibold">User not found</h1>
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
+        <div className="flex items-center justify-center">
+          <p className="text-2xl font-semibold">User not found</p>
+        </div>
       </div>
     );
   }

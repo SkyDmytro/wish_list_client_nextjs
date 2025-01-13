@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { wishList as wishListType } from '@/types/wishList';
 
+import Link from 'next/link';
+
 export const TableRowComponent = ({ wishlist }: { wishlist: wishListType }) => {
   return (
     <TableRow
@@ -29,13 +31,14 @@ export const TableRowComponent = ({ wishlist }: { wishlist: wishListType }) => {
           : 'Unknown'}
       </TableCell>
       <TableCell className="text-right">
-        <Button
-          onClick={() => console.log(wishlist)}
-          variant="ghost"
-          className="text-purple-500 hover:text-purple-400 hover:bg-purple-500/10"
-        >
-          View
-        </Button>
+        <Link href={`/wishlists/${wishlist._id}`}>
+          <Button
+            variant="ghost"
+            className="text-purple-500 hover:text-purple-400 hover:bg-purple-500/10"
+          >
+            View
+          </Button>
+        </Link>
       </TableCell>
     </TableRow>
   );

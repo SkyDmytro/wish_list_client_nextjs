@@ -5,6 +5,8 @@ export type wishList = {
   createdAt?: string;
   updatedAt?: string;
   __v?: number;
+  access: 'private' | 'public';
+  usersWithAccess: string[];
 };
 
 export type wishListResponse = {

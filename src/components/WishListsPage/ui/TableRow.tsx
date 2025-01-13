@@ -9,7 +9,7 @@ export const TableRowComponent = ({ wishlist }: { wishlist: wishListType }) => {
       className="border-gray-800 hover:bg-gray-900/50"
     >
       <TableCell className="font-medium">{wishlist.title}</TableCell>
-      <TableCell className="text-right">{10}</TableCell>
+      <TableCell className="">{10}</TableCell>
       <TableCell>
         {wishlist.createdAt
           ? new Date(wishlist.createdAt).toLocaleString('en-GB', {

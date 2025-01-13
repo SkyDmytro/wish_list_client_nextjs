@@ -1,50 +1,41 @@
+import { getRequest } from '@/api/requests';
 import { auth } from '@/auth/authSetup';
 import { WishListPage } from '@/components/WishListsPage/WishListPage';
 import { UserType } from '@/types/user';
-import { wishList } from '@/types/wishList';
+import { wishListResponse } from '@/types/wishList';
+import { API_URL, wishlistUrl } from '@/utils/config';
 
 const WishlistsPage = async ({ params }: { params: { id: string } }) => {
   const userId = await params.id;
   const authUser = await auth().then((res) => res.user);
   const isUserTheOwner = authUser?._id === userId;
-  console.log('authUser', authUser);
-  const mockWishlists: wishList[] = [
-    {
-      _id: '1',
-      title: 'Wishlist 1',
-      owner: userId,
-      createdAt: '2025-01-07T12:31:02.208+00:00',
-      updatedAt: '2025-01-07T12:31:02.208+00:00',
-    },
-    {
-      _id: '2',
-      title: 'Wishlist 2',
-      owner: userId,
-      createdAt: '2025-01-07T12:31:02.208+00:00',
-      updatedAt: '2025-01-09T12:31:02.208+00:00',
-    },
-    {
-      _id: '3',
-      title: 'Wishlist 3',
-      owner: userId,
-      createdAt: '2025-01-07T12:31:02.208+00:00',
-      updatedAt: '2025-01-08T12:31:02.208+00:00',
-    },
-  ];
+  const user = await getRequest<UserType>(
+    `${API_URL}/api/users/profile/${userId}`,
+    authUser?.token,
+  )
+    .then((res) => res)
+    .catch((err) => console.log(err));
 
-  const wishListOwner: UserType = {
-    _id: '676aac912f857f318a5a9007',
-    name: 'SkyAdmin',
-    email: 'skyadmin@admin.com',
-    createdAt: '2023-05-30T12:31:02.208+00:00',
-    updatedAt: '2023-05-30T12:31:02.208+00:00',
-    __v: 0,
-  };
+  const wishLists = await getRequest<wishListResponse[]>(
+    `${API_URL}${wishlistUrl}/${userId}/user?page=1&pageSize=10`,
+    authUser?.token,
+  )
+    .then((res) => res)
+    .catch((e) => console.log(e));
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center">
+        <h1 className="text-2xl font-semibold">User not found</h1>
+      </div>
+    );
+  }
+
   return (
     <WishListPage
-      wishlists={mockWishlists}
+      wishlists={wishLists.items || []}
       isUserTheOwner={isUserTheOwner}
-      wishListOwner={wishListOwner}
+      wishListOwner={user}
     />
   );
 };

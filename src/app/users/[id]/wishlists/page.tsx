@@ -33,7 +33,7 @@ const WishlistsPage = async ({ params }: { params: { id: string } }) => {
 
   return (
     <WishListPage
-      wishlists={wishLists.items || []}
+      wishlists={wishLists.items}
       isUserTheOwner={isUserTheOwner}
       wishListOwner={user}
     />

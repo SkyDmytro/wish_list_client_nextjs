@@ -6,14 +6,8 @@ import { wishList } from '@/types/wishList';
 import { ChevronLeft, ChevronRight, Gift } from 'lucide-react';
 
 import { Button } from '../ui/button';
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../ui/table';
-import { TableRowComponent } from './ui/TableRow';
+import { WishListPageHeader } from './ui/WishListPageHeader';
+import { WishListsTable } from './ui/WishListsTable';
 
 export const WishListPage = ({
   wishlists,
@@ -27,39 +21,29 @@ export const WishListPage = ({
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
       <div className="max-w-6xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">
-            {isUserTheOwner
-              ? 'My Wishlists'
-              : `Wishlists of ${wishListOwner.name}`}
-          </h1>
-          {isUserTheOwner && (
-            <Button className="bg-purple-600 hover:bg-purple-700">
-              <Gift className="mr-2 h-4 w-4" />
-              Create Wishlist
-            </Button>
-          )}
-        </div>
+        <WishListPageHeader
+          wishListOwner={wishListOwner}
+          isUserTheOwner={isUserTheOwner}
+        />
 
         <div className="rounded-lg border border-gray-800 bg-[#0F1521]">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-gray-800 hover:bg-transparent">
-                <TableHead className="text-gray-400">Name</TableHead>
-                <TableHead className="text-gray-400 ">Items</TableHead>
-                <TableHead className="text-gray-400">Created</TableHead>
-                <TableHead className="text-gray-400">Last Updated</TableHead>
-                <TableHead className="text-gray-400 text-right">
-                  Actions
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {wishlists.map((wishlist) => (
-                <TableRowComponent wishlist={wishlist} key={wishlist._id} />
-              ))}
-            </TableBody>
-          </Table>
+          {wishlists.length === 0 ||
+          (!isUserTheOwner &&
+            wishlists.every((wishlist) => wishlist.access === 'private')) ? (
+            <div className="flex items-center justify-center space-x-2 p-6">
+              <Gift className="h-5 w-5 text-purple-400" />
+              <p className="text-sm font-medium text-white">
+                {isUserTheOwner
+                  ? 'You have no wishlists yet.'
+                  : `User has no wishlists yet.`}
+              </p>
+            </div>
+          ) : (
+            <WishListsTable
+              wishlists={wishlists}
+              isUserTheOwner={isUserTheOwner}
+            />
+          )}
         </div>
 
         <div className="flex items-center justify-between">

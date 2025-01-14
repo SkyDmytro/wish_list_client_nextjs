@@ -1,5 +1,6 @@
 import { UserType } from '@/types/user';
 
+import { User2Icon } from 'lucide-react';
 import Link from 'next/link';
 
 export const FriendsSection = ({
@@ -21,7 +22,9 @@ export const FriendsSection = ({
             key={friend._id}
             className="flex items-center space-x-3 rounded-lg border border-gray-800 bg-gray-900/50 p-3"
           >
-            <div className="h-10 w-10 rounded-full bg-gray-800"></div>
+            <div className="h-10 w-10 rounded-full bg-gray-800  overflow-hidden">
+              <User2Icon className="h-10 w-10 " color="gray" />
+            </div>
             <div>
               <p className="text-sm font-medium text-white">Friend</p>
               <p className="text-xs text-gray-400">{friend.name}</p>

@@ -21,6 +21,7 @@ export type UserType = {
   email: string;
   createdAt: string;
   updatedAt: string;
+  avatar?: string;
   __v: number;
   token?: string;
 };

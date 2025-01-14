@@ -8,7 +8,6 @@ import { API_URL, wishlistUrl } from '@/utils/config';
 const Page = async ({ params }: { params: { id: string } }) => {
   const session = await auth();
   const userId = await params.id;
-  // TODO: change the way data fetchs
   const user = await getRequest<UserType>(
     `${API_URL}/api/users/profile/${userId}`,
     session?.user?.token,
@@ -30,7 +29,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
 
   return (
     <UserPage
-      userProps={user || {}}
+      userProps={user || ({} as UserType)}
       friends={friends || []}
       wishlists={wishLists.items || []}
     />

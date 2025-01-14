@@ -1,6 +1,6 @@
 import { getRequest } from '@/api/requests';
 import { auth } from '@/auth/authSetup';
-import { WishListPage } from '@/components/WishListsPage/WishListPage';
+import { WishListsPage } from '@/components/WishListsPage/WishListsPage';
 import { UserNotFound } from '@/components/WishListsPage/ui/UserNotFound';
 import { UserType } from '@/types/user';
 import { wishListResponse } from '@/types/wishList';
@@ -29,7 +29,7 @@ const WishlistsPage = async ({ params }: { params: { id: string } }) => {
   }
 
   return (
-    <WishListPage
+    <WishListsPage
       wishlists={wishLists.items}
       isUserTheOwner={isUserTheOwner}
       wishListOwner={user}

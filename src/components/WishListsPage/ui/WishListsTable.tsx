@@ -19,12 +19,12 @@ export const WishListsTable = ({
   return (
     <Table>
       <TableHeader>
-        <TableRow className="border-gray-800 hover:bg-transparent">
-          <TableHead className="text-gray-400">Name</TableHead>
-          <TableHead className="text-gray-400 ">Items</TableHead>
-          <TableHead className="text-gray-400">Created</TableHead>
-          <TableHead className="text-gray-400">Last Updated</TableHead>
-          <TableHead className="text-gray-400 text-right">Actions</TableHead>
+        <TableRow className="border-slate-800 hover:bg-transparent">
+          <TableHead className="text-slate-400">Name</TableHead>
+          <TableHead className="text-slate-400">Items</TableHead>
+          <TableHead className="text-slate-400">Created</TableHead>
+          <TableHead className="text-slate-400">Last Updated</TableHead>
+          <TableHead className="text-right text-slate-400">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

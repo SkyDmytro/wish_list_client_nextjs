@@ -13,3 +13,12 @@ export type wishListResponse = {
   items: wishList[];
   meta: unknown;
 };
+
+export interface GiftItem {
+  _id: string;
+  name: string;
+  price: number;
+  link: string;
+  priority: 'High' | 'Medium' | 'Low';
+  status: 'Available' | 'Reserved';
+}

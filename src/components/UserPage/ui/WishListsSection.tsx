@@ -29,9 +29,12 @@ export const WishListsSection = ({
                 <p className="text-xs text-gray-400">{list.title}</p>
               </div>
             </div>
-            <button className="rounded-lg bg-purple-500 px-3 py-1 text-xs font-medium text-white hover:bg-purple-600">
+            <Link
+              href={`/wishlists/${list._id}`}
+              className="rounded-lg bg-purple-500 px-3 py-1 text-xs font-medium text-white hover:bg-purple-600"
+            >
               View
-            </button>
+            </Link>
           </div>
         ))}
       </div>

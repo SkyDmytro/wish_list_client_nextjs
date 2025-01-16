@@ -33,6 +33,7 @@ const WishlistsPage = async ({ params }: { params: { id: string } }) => {
       wishlists={wishLists.items}
       isUserTheOwner={isUserTheOwner}
       wishListOwner={user}
+      pagination={wishLists.meta}
     />
   );
 };

@@ -9,9 +9,14 @@ export type wishList = {
   usersWithAccess: string[];
 };
 
-export type wishListResponse = {
+export type WishListResponse = {
   items: wishList[];
-  meta: unknown;
+  meta: {
+    page: number;
+    totalPages: number;
+    pageSize: number;
+    total: number;
+  };
 };
 
 export interface GiftItem {

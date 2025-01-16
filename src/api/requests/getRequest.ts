@@ -8,6 +8,7 @@ export const getRequest = async <T>(
       headers: {
         'Content-Type': 'application/json',
         Cookie: `jwt=${token}`,
+        Authorization: `Bearer ${token}`,
       },
       credentials: 'include',
     });

@@ -25,3 +25,12 @@ export type UserType = {
   __v: number;
   token?: string;
 };
+
+export type FriendResponse = {
+  items: UserType[];
+  meta: {
+    total: number;
+    page: number;
+    totalPages: number;
+  };
+};

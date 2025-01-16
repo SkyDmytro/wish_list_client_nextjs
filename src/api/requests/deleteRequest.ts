@@ -4,6 +4,7 @@ export const deleteRequest = async (url: string, token?: string) => {
     headers: {
       'Content-Type': 'application/json',
       Cookie: `jwt=${token}`,
+      Authorization: `Bearer ${token}`,
     },
     credentials: 'include',
   });

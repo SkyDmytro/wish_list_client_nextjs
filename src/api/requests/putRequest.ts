@@ -8,6 +8,7 @@ export const putRequest = async (
     headers: {
       'Content-Type': 'application/json',
       Cookie: `jwt=${token}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(body),
     credentials: 'include',

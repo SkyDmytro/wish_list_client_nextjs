@@ -45,7 +45,7 @@ export const WishListsPage = ({
           meta: unknown;
         }>(
           `${API_URL}${wishlistUrl}/${wishListOwner._id}/user?page=${currentPage}&pageSize=10`,
-          session?.accessToken || '',
+          session?.accessToken,
         );
         setCurrentWishLists(newWishLists.items);
       } catch (error) {
@@ -58,7 +58,15 @@ export const WishListsPage = ({
 
   if (status === 'loading') {
     console.log(session);
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white">
+        <WishListPageHeader
+          wishListOwner={wishListOwner}
+          isUserTheOwner={isUserTheOwner}
+        />
+        <p className="text-white text-2xl self-center">Loading...</p>
+      </div>
+    );
   }
 
   return (

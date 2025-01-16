@@ -16,8 +16,8 @@ export const UserPage = ({
   wishlists,
 }: {
   userProps: UserType;
-  friends: UserType[];
-  wishlists: wishList[];
+  friends: { items: UserType[]; totalFriends: number };
+  wishlists: { items: wishList[]; totalWishlists: number };
 }) => {
   const [user] = useState(userProps);
 
@@ -34,12 +34,12 @@ export const UserPage = ({
         />
 
         <StatsCard
-          friendsCount={friends.length}
-          wishlistsCount={wishlists.length}
+          friendsCount={friends.totalFriends}
+          wishlistsCount={wishlists.totalWishlists}
         />
-        <FriendsSection friends={friends} user={user} />
+        <FriendsSection friends={friends.items} user={user} />
 
-        <WishListsSection wishlists={wishlists} userId={user._id} />
+        <WishListsSection wishlists={wishlists.items} userId={user._id} />
       </div>
     </div>
   );

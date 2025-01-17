@@ -1,7 +1,34 @@
 import { API_URL } from '@/utils/config';
 
-import NextAuth from 'next-auth';
+import NextAuth, { Session } from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+
+// Define the types for the user object
+interface User {
+  email: string;
+  token: string;
+  // Add other properties as needed
+}
+
+// Define the types for the JWT token
+interface JWT {
+  user?: User;
+  accessToken?: string;
+}
+
+// Extend the NextAuth types to include your custom session and token properties
+declare module 'next-auth' {
+  interface Session {
+    user: User; // Custom user type
+    accessToken: string; // The access token
+  }
+
+  interface JWT {
+    user?: User;
+    accessToken?: string;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -10,7 +37,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         email: {},
         password: {},
       },
-      authorize: async (credentials) => {
+      authorize: async (credentials): Promise<User | null> => {
         try {
           const res = await fetch(`${API_URL}/api/users/auth`, {
             method: 'POST',
@@ -24,8 +51,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             credentials: 'include',
           });
 
-          const user = await res.json();
-          // console.log('user', user);
+          const user: User = await res.json();
           if (res.ok && user.token) {
             return user;
           }
@@ -39,15 +65,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }): Promise<JWT> {
       if (user) {
         token.user = user;
         token.accessToken = user.token;
       }
       return token;
     },
-    async session({ session, token }) {
-      session.user = token.user;
+    async session({ session, token }): Promise<Session> {
+      if (token?.user) {
+        session.user = token.user;
+      }
       session.accessToken = token.accessToken;
       return session;
     },
@@ -59,4 +87,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: '/login',
   },
-});
+} as NextAuthOptions);

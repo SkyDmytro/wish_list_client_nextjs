@@ -57,7 +57,6 @@ export const WishListsPage = ({
   }, [currentPage, session?.accessToken]);
 
   if (status === 'loading') {
-    console.log(session);
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white">
         <WishListPageHeader

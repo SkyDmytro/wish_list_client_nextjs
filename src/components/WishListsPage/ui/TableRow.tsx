@@ -30,6 +30,12 @@ export const TableRowComponent = ({ wishlist }: { wishlist: wishListType }) => {
             })
           : 'Unknown'}
       </TableCell>
+
+      <TableCell className="text-left">
+        <span className="">
+          {wishlist.access.charAt(0).toUpperCase() + wishlist.access.slice(1)}
+        </span>
+      </TableCell>
       <TableCell className="text-right">
         <Link href={`/wishlists/${wishlist._id}`}>
           <Button

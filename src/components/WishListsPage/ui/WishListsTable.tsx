@@ -11,10 +11,9 @@ import { TableRowComponent } from './TableRow';
 
 export const WishListsTable = ({
   wishlists,
-  isUserTheOwner,
 }: {
   wishlists: wishList[];
-  isUserTheOwner: boolean;
+  isUserTheOwner?: boolean;
 }) => {
   return (
     <Table>
@@ -24,12 +23,12 @@ export const WishListsTable = ({
           <TableHead className="text-slate-400">Items</TableHead>
           <TableHead className="text-slate-400">Created</TableHead>
           <TableHead className="text-slate-400">Last Updated</TableHead>
+          <TableHead className="text-slate-400">Access</TableHead>
           <TableHead className="text-right text-slate-400">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {wishlists.map((wishlist) => {
-          if (wishlist.access === 'private' && !isUserTheOwner) return null;
           return <TableRowComponent wishlist={wishlist} key={wishlist._id} />;
         })}
       </TableBody>

@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Gift } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
+import { Spinner } from '../Loading/Loading';
 import { Button } from '../ui/button';
 import { WishListPageHeader } from './ui/WishListPageHeader';
 import { WishListsTable } from './ui/WishListsTable';
@@ -58,18 +59,20 @@ export const WishListsPage = ({
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white">
+      <div className="h-full bg-gradient-to-b from-gray-900 to-black p-8 text-white">
         <WishListPageHeader
           wishListOwner={wishListOwner}
           isUserTheOwner={isUserTheOwner}
         />
-        <p className="text-white text-2xl self-center">Loading...</p>
+        <div className="w-full h-full flex items-center justify-center">
+          <Spinner />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
+    <div className="h-full w-full bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
       <WishListPageHeader
         wishListOwner={wishListOwner}
         isUserTheOwner={isUserTheOwner}

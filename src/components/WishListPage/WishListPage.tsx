@@ -35,7 +35,7 @@ export const WishListPage = ({
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-white">
-            {wishList.title} Wishlist
+            {wishList.title}
           </h2>
           <p className="text-slate-400 mt-2">
             {totalItems} items •{' '}

@@ -34,6 +34,6 @@ export type GiftResponse = {
     page: number;
     totalPages: number;
     pageSize: number;
-    total: number;
+    totalItems: number;
   };
 };

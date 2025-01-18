@@ -10,7 +10,7 @@ export type wishList = {
 };
 
 export type WishListResponse = {
-  items: wishList[] | [];
+  items: wishList[];
   meta: {
     page: number;
     totalPages: number;

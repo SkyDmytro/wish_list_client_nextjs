@@ -8,7 +8,7 @@ import { API_URL, wishlistUrl } from '@/utils/config';
 
 const WishlistsPage = async ({ params }: { params: { id: string } }) => {
   const userId = await params.id;
-  const authUser = await auth().then((res) => res.user as UserType);
+  const { user: authUser } = await auth();
   const isUserTheOwner = authUser?._id === userId;
 
   const user = await getRequest<UserType>(
@@ -21,14 +21,17 @@ const WishlistsPage = async ({ params }: { params: { id: string } }) => {
       return {} as UserType;
     });
 
-  const wishLists = await getRequest<WishListResponse[]>(
+  const wishLists = await getRequest<WishListResponse>(
     `${API_URL}${wishlistUrl}/${userId}/user?page=1&pageSize=10`,
     authUser?.token,
   )
     .then((res) => res)
     .catch((e) => {
       console.log(e);
-      return { items: [], meta: { total: 0 } };
+      return {
+        items: [],
+        meta: { total: 0, page: 0, totalPages: 0, pageSize: 0 },
+      };
     });
 
   if (!user) {

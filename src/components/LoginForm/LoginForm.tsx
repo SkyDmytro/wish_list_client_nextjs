@@ -8,9 +8,12 @@ import { loginSchema } from '@/schemas/userLogin.schema';
 import { FormEvent, useState } from 'react';
 
 import { signIn } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 
 export default function LoginForm() {
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+  const searchParams = useSearchParams();
+  const error = searchParams.get('error');
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -72,6 +75,11 @@ export default function LoginForm() {
               {error}
             </p>
           ))}
+          {error && (
+            <p className="mt-1 text-sm text-red-400">
+              Invalid email or password
+            </p>
+          )}
         </div>
 
         <div>

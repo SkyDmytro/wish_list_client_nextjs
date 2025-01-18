@@ -1,4 +1,4 @@
-import { GiftItem } from '@/types/wishList';
+import { GiftItem, wishList } from '@/types/wishList';
 
 import {
   DropdownMenu,
@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu';
 import { ExternalLink, Gift, Menu, Plus } from 'lucide-react';
+import Link from 'next/link';
 
 import { Button } from '../ui/button';
 import {
@@ -18,21 +19,37 @@ import {
   TableRow,
 } from '../ui/table';
 
-export const WishListPage = ({ gifts }: { gifts: GiftItem[] }) => {
+export const WishListPage = ({
+  gifts,
+  isOwner,
+  wishList,
+  totalItems,
+}: {
+  gifts: GiftItem[];
+  wishList: wishList;
+  isOwner: boolean;
+  totalItems: number;
+}) => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
-      {/* Main Content */}
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-white">
-            Birthday Wishlist
+            {wishList.title} Wishlist
           </h2>
-          <p className="text-slate-400">10 items • Created 07/01/2025</p>
+          <p className="text-slate-400 mt-2">
+            {totalItems} items •{' '}
+            {new Intl.DateTimeFormat('en-GB', {
+              dateStyle: 'medium',
+            }).format(new Date(wishList.createdAt || ''))}
+          </p>
         </div>
-        <Button className="bg-purple-600 hover:bg-purple-700">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Gift
-        </Button>
+        {isOwner && (
+          <Button className="bg-purple-600 hover:bg-purple-700">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Gift
+          </Button>
+        )}
       </div>
 
       <div className="rounded-lg border border-slate-800 bg-slate-900/50">
@@ -101,13 +118,15 @@ export const WishListPage = ({ gifts }: { gifts: GiftItem[] }) => {
                       className="w-56 bg-slate-900 border border-slate-800 rounded-md"
                     >
                       <DropdownMenuItem asChild>
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
-                        >
-                          <ExternalLink className="mr-2 h-4 w-4" />
-                          <span>Visit Link</span>
-                        </Button>
+                        <Link href={gift.url} className="focus:outline-none">
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
+                          >
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            <span>Visit Link</span>
+                          </Button>
+                        </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Button

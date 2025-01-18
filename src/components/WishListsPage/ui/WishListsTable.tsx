@@ -20,7 +20,6 @@ export const WishListsTable = ({
       <TableHeader>
         <TableRow className="border-slate-800 hover:bg-transparent">
           <TableHead className="text-slate-400">Name</TableHead>
-          <TableHead className="text-slate-400">Items</TableHead>
           <TableHead className="text-slate-400">Created</TableHead>
           <TableHead className="text-slate-400">Last Updated</TableHead>
           <TableHead className="text-slate-400">Access</TableHead>

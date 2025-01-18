@@ -23,7 +23,17 @@ export interface GiftItem {
   _id: string;
   name: string;
   price: number;
-  link: string;
+  url: string;
   priority: 'High' | 'Medium' | 'Low';
   status: 'Available' | 'Reserved';
 }
+
+export type GiftResponse = {
+  items: GiftItem[];
+  meta: {
+    page: number;
+    totalPages: number;
+    pageSize: number;
+    totalItems: number;
+  };
+};

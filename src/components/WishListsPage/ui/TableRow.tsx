@@ -11,12 +11,11 @@ export const TableRowComponent = ({ wishlist }: { wishlist: wishListType }) => {
       className="border-gray-800 hover:bg-gray-900/50"
     >
       <TableCell className="font-medium">{wishlist.title}</TableCell>
-      <TableCell className="">{10}</TableCell>
       <TableCell>
         {wishlist.createdAt
           ? new Date(wishlist.createdAt).toLocaleString('en-GB', {
               day: '2-digit',
-              month: '2-digit',
+              month: 'short',
               year: 'numeric',
             })
           : 'Unknown'}
@@ -25,7 +24,7 @@ export const TableRowComponent = ({ wishlist }: { wishlist: wishListType }) => {
         {wishlist.updatedAt
           ? new Date(wishlist.updatedAt).toLocaleString('en-GB', {
               day: '2-digit',
-              month: '2-digit',
+              month: 'short',
               year: 'numeric',
             })
           : 'Unknown'}

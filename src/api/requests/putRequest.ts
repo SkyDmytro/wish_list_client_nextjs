@@ -3,15 +3,28 @@ export const putRequest = async (
   body: Record<string, string>,
   token?: string,
 ) => {
-  const response = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Cookie: `jwt=${token}`,
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(body),
-    credentials: 'include',
-  });
-  return response.json();
+  try {
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: `jwt=${token}`,
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `Request failed with status ${response.status}`,
+      );
+    }
+
+    return response.json();
+  } catch (e: unknown) {
+    console.error('Request failed:', e);
+    throw e;
+  }
 };

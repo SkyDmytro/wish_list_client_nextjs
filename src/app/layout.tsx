@@ -34,6 +34,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen`}
       >
+        <div id="modal-root"></div>
         <SessionProvider>
           <ToastProvider>
             {children}

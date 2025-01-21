@@ -1,3 +1,6 @@
+'use client';
+
+import { useModal } from '@/hooks/useModal';
 import { GiftItem, wishList } from '@/types/wishList';
 
 import {
@@ -9,6 +12,7 @@ import {
 import { ExternalLink, Gift, Menu, Plus } from 'lucide-react';
 import Link from 'next/link';
 
+import { AddWishlistModal } from '../AddWishListModal/AddWishListModal';
 import { Button } from '../ui/button';
 import {
   Table,
@@ -30,8 +34,10 @@ export const WishListPage = ({
   isOwner: boolean;
   totalItems: number;
 }) => {
+  const { isOpen, openModal, closeModal } = useModal();
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
+      <AddWishlistModal isOpen={isOpen} closeModal={closeModal} />
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-white">
@@ -45,10 +51,15 @@ export const WishListPage = ({
           </p>
         </div>
         {isOwner && (
-          <Button className="bg-purple-600 hover:bg-purple-700">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Gift
-          </Button>
+          <>
+            <Button
+              className="bg-purple-600 hover:bg-purple-700"
+              onClick={openModal}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Gift
+            </Button>
+          </>
         )}
       </div>
 

@@ -23,7 +23,7 @@ export const Header = () => {
     <header className="flex items-center justify-between p-4 bg-gray-900 text-white">
       <div className="flex items-center gap-2">
         <h1 className="text-2xl text-gray-300 ">
-          <span className="text-gray-300 font-bold">Sky</span>
+          <span className="font-bold">Sky</span>
           Wishes
         </h1>
       </div>
@@ -31,7 +31,7 @@ export const Header = () => {
         <Button
           variant="ghost"
           size="default"
-          className="relative rounded-full "
+          className="relative rounded-full sm:hidden md:block"
         >
           <Link
             href={`/users/${userId}/wishlists`}
@@ -66,7 +66,7 @@ export const Header = () => {
             <DropdownMenuItem asChild>
               <Link
                 href={`/users/${userId}/wishlists`}
-                className="flex w-full cursor-pointer items-center sm:hidden"
+                className="flex w-full cursor-pointer items-center sm:flex md:hidden"
               >
                 <Gift className="mr-2 h-4 w-4" />
                 My Lists

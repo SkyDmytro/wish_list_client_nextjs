@@ -1,6 +1,12 @@
+import { createGiftRequest } from '@/api/giftRequests/giftRequests';
+import { useToast } from '@/hooks/use-toast';
+import { GiftItem } from '@/types/wishList';
+
 import { useState } from 'react';
 
 import { ChevronDown } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { z } from 'zod';
 
 import { Button } from '../ui/button';
 import {
@@ -13,48 +19,102 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Modal } from '../ui/modal';
 
-interface GiftType {
-  giftName: string;
-  price: number;
-  link: string;
-  priority: string;
-}
+type GiftType = Omit<GiftItem, '_id' | 'status'>;
 type keys = keyof GiftType;
 type values = GiftType[keyof GiftType];
 
-/**
- * A modal that prompts the user to create a new wishlist.
- *
- * @param {{
- *   closeModal: () => void;
- *   openModal: () => void;
- *   isOpen: boolean;
- * }} props
- * @returns {JSX.Element}
- */
+const giftSchema = z.object({
+  name: z.string().min(1, { message: 'Name is required' }),
+  price: z.number().min(0, { message: 'Price must be non-negative' }),
+  url: z.string().url({ message: 'Must be a valid URL' }),
+  priority: z.enum(['High', 'Medium', 'Low']),
+});
+
 export const AddWishlistModal = ({
   closeModal,
   isOpen,
+  wishlistId,
 }: {
   closeModal: () => void;
   isOpen: boolean;
+  wishlistId: string;
 }): JSX.Element => {
   const [giftData, setGiftData] = useState<GiftType>({
-    giftName: '',
+    name: '',
     price: 0,
-    link: '',
+    url: '',
     priority: 'Low',
   });
+  const [errors, setErrors] = useState<Record<keys, string | null>>({
+    name: null,
+    price: null,
+    url: null,
+    priority: null,
+  });
 
-  const handleAddGift = () => {
-    console.log('add', giftData);
-    closeModal();
+  const { toast } = useToast();
+  const { data: session } = useSession();
+
+  const handleAddGift = async () => {
+    const validationResult = giftSchema.safeParse(giftData);
+    if (!validationResult.success) {
+      const fieldErrors = validationResult.error.format();
+      setErrors({
+        name: fieldErrors.name?._errors[0] ?? null,
+        price: fieldErrors.price?._errors[0] ?? null,
+        url: fieldErrors.url?._errors[0] ?? null,
+        priority: null,
+      });
+      return;
+    }
+
+    try {
+      await createGiftRequest(
+        {
+          ...giftData,
+          status: 'Available',
+          wishListId: wishlistId,
+          userId: session?.user?._id,
+        },
+        session?.user?.token as string,
+      );
+      toast({
+        title: 'Success',
+        description: 'Gift added successfully',
+        variant: 'default',
+      });
+    } catch (e: unknown) {
+      toast({
+        title: 'Something went wrong',
+        description: (e.message as string) || 'Something went wrong',
+        variant: 'destructive',
+      });
+    } finally {
+      setGiftData({
+        name: '',
+        price: 0,
+        url: '',
+        priority: 'Low',
+      });
+      setErrors({
+        name: null,
+        price: null,
+        url: null,
+        priority: null,
+      });
+      window.location.reload();
+      closeModal();
+    }
   };
 
   const handleChange = (key: keys, value: values) => {
     setGiftData((prev) => ({
       ...prev,
       [key]: value,
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      [key]: null,
     }));
   };
 
@@ -88,26 +148,29 @@ export const AddWishlistModal = ({
       <div className="flex flex-col gap-2">
         <ModalInput
           inputId="giftName"
-          inputValue={giftData.giftName}
+          inputValue={giftData.name}
           labelText="Name"
+          error={errors.name}
           onChange={(e) => {
-            handleChange('giftName', e.target.value);
+            handleChange('name', e.target.value);
           }}
         />
         <ModalInput
           inputId="price"
           inputValue={giftData.price}
           labelText="Price"
+          error={errors.price}
           onChange={(e) => {
-            handleChange('price', e.target.value);
+            handleChange('price', Number(e.target.value));
           }}
         />
         <ModalInput
           inputId="link"
-          inputValue={giftData.link}
+          inputValue={giftData.url}
           labelText="Link"
+          error={errors.url}
           onChange={(e) => {
-            handleChange('link', e.target.value);
+            handleChange('url', e.target.value);
           }}
         />
         <div className="space-y-2">
@@ -176,6 +239,7 @@ interface ModalInputProps {
   inputValue: values;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   inputId: string;
+  error?: string | null;
   prefix?: string;
 }
 
@@ -184,6 +248,7 @@ const ModalInput = ({
   inputValue,
   onChange,
   inputId,
+  error,
   prefix,
 }: ModalInputProps) => {
   return (
@@ -206,6 +271,7 @@ const ModalInput = ({
           value={inputValue}
           onChange={onChange}
         />
+        {error && <span className="text-red-300 text-sm">{error}</span>}
       </div>
     </div>
   );

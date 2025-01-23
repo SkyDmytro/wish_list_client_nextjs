@@ -37,7 +37,11 @@ export const WishListPage = ({
   const { isOpen, openModal, closeModal } = useModal();
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
-      <AddWishlistModal isOpen={isOpen} closeModal={closeModal} />
+      <AddWishlistModal
+        isOpen={isOpen}
+        closeModal={closeModal}
+        wishlistId={wishList._id}
+      />
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-white">

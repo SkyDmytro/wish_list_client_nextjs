@@ -2,6 +2,7 @@
 
 import { useModal } from '@/hooks/useModal';
 import { GiftItem, wishList } from '@/types/wishList';
+import { currencies } from '@/utils/constants';
 
 import {
   DropdownMenu,
@@ -90,7 +91,8 @@ export const WishListPage = ({
                   {gift.name}
                 </TableCell>
                 <TableCell className="text-slate-300">
-                  ${gift.price.toFixed(2)}
+                  {gift.price.toFixed(2)}
+                  {currencies[gift.currency]}
                 </TableCell>
                 <TableCell>
                   <span

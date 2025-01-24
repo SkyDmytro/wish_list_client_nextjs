@@ -1,3 +1,5 @@
+import { currencyType } from './types';
+
 export type wishList = {
   _id: string;
   title: string;
@@ -23,6 +25,7 @@ export interface GiftItem {
   _id: string;
   name: string;
   price: number;
+  currency: currencyType;
   url: string;
   priority: 'High' | 'Medium' | 'Low';
   status: 'Available' | 'Reserved';

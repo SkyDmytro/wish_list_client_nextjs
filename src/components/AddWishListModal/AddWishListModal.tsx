@@ -1,5 +1,8 @@
+'use client';
+
 import { createGiftRequest } from '@/api/giftRequests/giftRequests';
 import { useToast } from '@/hooks/use-toast';
+import { currencyType } from '@/types/types';
 import { GiftItem } from '@/types/wishList';
 
 import { useState } from 'react';
@@ -8,6 +11,7 @@ import { ChevronDown } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 
+import { CurrencyDropDown } from '../CurrencyDropdown/CurrencyDropDown';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
@@ -19,7 +23,9 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Modal } from '../ui/modal';
 
-type GiftType = Omit<GiftItem, '_id' | 'status'>;
+type GiftType = Omit<GiftItem, '_id' | 'status'> & {
+  currency: currencyType;
+};
 type keys = keyof GiftType;
 type values = GiftType[keyof GiftType];
 
@@ -44,12 +50,14 @@ export const AddWishlistModal = ({
     price: 0,
     url: '',
     priority: 'Low',
+    currency: 'USD',
   });
   const [errors, setErrors] = useState<Record<keys, string | null>>({
     name: null,
     price: null,
     url: null,
     priority: null,
+    currency: null,
   });
 
   const { toast } = useToast();
@@ -64,6 +72,7 @@ export const AddWishlistModal = ({
         price: fieldErrors.price?._errors[0] ?? null,
         url: fieldErrors.url?._errors[0] ?? null,
         priority: null,
+        currency: null,
       });
       return;
     }
@@ -95,12 +104,14 @@ export const AddWishlistModal = ({
         price: 0,
         url: '',
         priority: 'Low',
+        currency: 'USD',
       });
       setErrors({
         name: null,
         price: null,
         url: null,
         priority: null,
+        currency: null,
       });
       window.location.reload();
       closeModal();
@@ -155,15 +166,25 @@ export const AddWishlistModal = ({
             handleChange('name', e.target.value);
           }}
         />
-        <ModalInput
-          inputId="price"
-          inputValue={giftData.price}
-          labelText="Price"
-          error={errors.price}
-          onChange={(e) => {
-            handleChange('price', Number(e.target.value));
-          }}
-        />
+        <div className="flex gap-2 items-end flex-1">
+          <ModalInput
+            inputId="price"
+            inputValue={giftData.price}
+            labelText="Price"
+            error={errors.price}
+            onChange={(e) => {
+              handleChange('price', Number(e.target.value));
+            }}
+          />
+          <div className="w-1/3">
+            <CurrencyDropDown
+              onChange={(newCurrency: string) =>
+                handleChange('currency', newCurrency as currencyType)
+              }
+              currency={giftData.currency}
+            />
+          </div>
+        </div>
         <ModalInput
           inputId="link"
           inputValue={giftData.url}

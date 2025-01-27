@@ -102,13 +102,15 @@ export const WishListItemsTable = ({
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     {!isOwner ? (
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
-                      >
-                        <Gift className="mr-2 h-4 w-4" />
-                        <span>Reserve Gift</span>
-                      </Button>
+                      gift.status === 'Available' ? (
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
+                        >
+                          <Gift className="mr-2 h-4 w-4" />
+                          <span>Reserve Gift</span>
+                        </Button>
+                      ) : null
                     ) : (
                       <Button
                         variant="ghost"

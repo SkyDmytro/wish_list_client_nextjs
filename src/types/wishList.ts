@@ -40,3 +40,5 @@ export type GiftResponse = {
     totalItems: number;
   };
 };
+
+export { currencyType };

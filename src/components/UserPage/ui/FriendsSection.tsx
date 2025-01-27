@@ -18,18 +18,20 @@ export const FriendsSection = ({
       )}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         {friends.map((friend) => (
-          <div
-            key={friend._id}
-            className="flex items-center space-x-3 rounded-lg border border-gray-800 bg-gray-900/50 p-3"
-          >
-            <div className="h-10 w-10 rounded-full bg-gray-800  overflow-hidden">
-              <User2Icon className="h-10 w-10 " color="gray" />
+          <Link key={friend._id} href={`/users/${friend._id}`}>
+            <div
+              key={friend._id}
+              className="flex items-center space-x-3 rounded-lg border border-gray-800 bg-gray-900/50 p-3"
+            >
+              <div className="h-10 w-10 rounded-full bg-gray-800  overflow-hidden">
+                <User2Icon className="h-10 w-10 " color="gray" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-white">Friend</p>
+                <p className="text-xs text-gray-400">{friend.name}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-white">Friend</p>
-              <p className="text-xs text-gray-400">{friend.name}</p>
-            </div>
-          </div>
+          </Link>
         ))}
       </div>
       {friends.length > 0 && (

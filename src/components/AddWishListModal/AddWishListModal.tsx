@@ -2,10 +2,9 @@
 
 import { createGiftRequest } from '@/api/giftRequests/giftRequests';
 import { useToast } from '@/hooks/use-toast';
-import { currencyType } from '@/types/types';
-import { GiftItem } from '@/types/wishList';
+import { GiftItem, currencyType } from '@/types/wishList';
 
-import { useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 import { ChevronDown } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -26,8 +25,6 @@ import { Modal } from '../ui/modal';
 type GiftType = Omit<GiftItem, '_id' | 'status'> & {
   currency: currencyType;
 };
-type keys = keyof GiftType;
-type values = GiftType[keyof GiftType];
 
 const giftSchema = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
@@ -44,7 +41,7 @@ export const AddWishlistModal = ({
   closeModal: () => void;
   isOpen: boolean;
   wishlistId: string;
-}): JSX.Element => {
+}) => {
   const [giftData, setGiftData] = useState<GiftType>({
     name: '',
     price: 0,
@@ -52,27 +49,21 @@ export const AddWishlistModal = ({
     priority: 'Low',
     currency: 'USD',
   });
-  const [errors, setErrors] = useState<Record<keys, string | null>>({
-    name: null,
-    price: null,
-    url: null,
-    priority: null,
-    currency: null,
-  });
+  const [errors, setErrors] = useState<Partial<Record<keyof GiftType, string>>>(
+    {},
+  );
 
   const { toast } = useToast();
   const { data: session } = useSession();
 
-  const handleAddGift = async () => {
+  const handleAddGift = useCallback(async () => {
     const validationResult = giftSchema.safeParse(giftData);
     if (!validationResult.success) {
-      const fieldErrors = validationResult.error.format();
+      const fieldErrors = validationResult.error.flatten().fieldErrors;
       setErrors({
-        name: fieldErrors.name?._errors[0] ?? null,
-        price: fieldErrors.price?._errors[0] ?? null,
-        url: fieldErrors.url?._errors[0] ?? null,
-        priority: null,
-        currency: null,
+        name: fieldErrors.name?.[0],
+        price: fieldErrors.price?.[0],
+        url: fieldErrors.url?.[0],
       });
       return;
     }
@@ -95,7 +86,7 @@ export const AddWishlistModal = ({
     } catch (e: unknown) {
       toast({
         title: 'Something went wrong',
-        description: (e.message as string) || 'Something went wrong',
+        description: (e as Error).message || 'Something went wrong',
         variant: 'destructive',
       });
     } finally {
@@ -106,30 +97,27 @@ export const AddWishlistModal = ({
         priority: 'Low',
         currency: 'USD',
       });
-      setErrors({
-        name: null,
-        price: null,
-        url: null,
-        priority: null,
-        currency: null,
-      });
+      setErrors({});
       window.location.reload();
       closeModal();
     }
-  };
+  }, [giftData, wishlistId, session, toast, closeModal]);
 
-  const handleChange = (key: keys, value: values) => {
-    setGiftData((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-    setErrors((prev) => ({
-      ...prev,
-      [key]: null,
-    }));
-  };
+  const handleChange = useCallback(
+    (key: keyof GiftType, value: string | number) => {
+      setGiftData((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+      setErrors((prev) => ({
+        ...prev,
+        [key]: null,
+      }));
+    },
+    [],
+  );
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = useCallback((priority: string) => {
     switch (priority.toLowerCase()) {
       case 'high':
         return 'bg-red-500';
@@ -140,7 +128,10 @@ export const AddWishlistModal = ({
       default:
         return 'bg-blue-500';
     }
-  };
+  }, []);
+
+  const priorityOptions = useMemo(() => ['High', 'Medium', 'Low'], []);
+
   return (
     <Modal
       isOpen={isOpen}
@@ -154,7 +145,6 @@ export const AddWishlistModal = ({
           Add Gift
         </Button>
       }
-      key={'dsadsa'}
     >
       <div className="flex flex-col gap-2">
         <ModalInput
@@ -162,9 +152,9 @@ export const AddWishlistModal = ({
           inputValue={giftData.name}
           labelText="Name"
           error={errors.name}
-          onChange={(e) => {
-            handleChange('name', e.target.value);
-          }}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            handleChange('name', e.target.value)
+          }
         />
         <div className="flex gap-2 items-end flex-1">
           <ModalInput
@@ -172,9 +162,7 @@ export const AddWishlistModal = ({
             inputValue={giftData.price}
             labelText="Price"
             error={errors.price}
-            onChange={(e) => {
-              handleChange('price', Number(e.target.value));
-            }}
+            onChange={(e) => handleChange('price', Number(e.target.value))}
           />
           <div className="w-1/3">
             <CurrencyDropDown
@@ -190,9 +178,7 @@ export const AddWishlistModal = ({
           inputValue={giftData.url}
           labelText="Link"
           error={errors.url}
-          onChange={(e) => {
-            handleChange('url', e.target.value);
-          }}
+          onChange={(e) => handleChange('url', e.target.value)}
         />
         <div className="space-y-2">
           <Label
@@ -220,33 +206,20 @@ export const AddWishlistModal = ({
               className="bg-[#1a1f29] border-gray-700"
               align="end"
             >
-              <DropdownMenuItem
-                onClick={() => handleChange('priority', 'High')}
-                className="hover:bg-[#252b38] text-gray-200"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-red-500" />
-                  High
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleChange('priority', 'Medium')}
-                className="hover:bg-[#252b38] text-gray-200"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500" />
-                  Medium
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleChange('priority', 'Low')}
-                className="hover:bg-[#252b38] text-gray-200"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-500" />
-                  Low
-                </div>
-              </DropdownMenuItem>
+              {priorityOptions.map((priority) => (
+                <DropdownMenuItem
+                  key={priority}
+                  onClick={() => handleChange('priority', priority)}
+                  className="hover:bg-[#252b38] text-gray-200"
+                >
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-2 h-2 rounded-full ${getPriorityColor(priority)}`}
+                    />
+                    {priority}
+                  </div>
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -255,15 +228,12 @@ export const AddWishlistModal = ({
   );
 };
 
-interface ModalInputProps {
-  labelText: string;
-  inputValue: values;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  inputId: string;
-  error?: string | null;
-  prefix?: string;
-}
-
+/**
+ * A form input component for the modal.
+ *
+ * @param {ModalInputProps} props
+ * @returns {JSX.Element}
+ */
 const ModalInput = ({
   labelText,
   inputValue,
@@ -271,7 +241,14 @@ const ModalInput = ({
   inputId,
   error,
   prefix,
-}: ModalInputProps) => {
+}: {
+  labelText: string;
+  inputValue: string | number;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  inputId: string;
+  error?: string;
+  prefix?: string;
+}): JSX.Element => {
   return (
     <div className="space-y-2">
       <Label className="text-sm font-medium text-gray-300" htmlFor={inputId}>
@@ -284,9 +261,7 @@ const ModalInput = ({
           </span>
         )}
         <Input
-          className={`w-full bg-[#1a1f29] text-gray-200 border-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder:text-gray-500 ${
-            prefix ? 'pl-7' : ''
-          }`}
+          className={`w-full bg-[#1a1f29] text-gray-200 border-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder:text-gray-500 ${prefix ? 'pl-7' : ''}`}
           placeholder={`Enter ${labelText.toLowerCase()}`}
           id={inputId}
           value={inputValue}

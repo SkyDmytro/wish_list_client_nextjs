@@ -16,10 +16,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu';
-import { ExternalLink, Gift, Menu } from 'lucide-react';
+import { ExternalLink, Gift, Menu, Trash } from 'lucide-react';
 import Link from 'next/link';
 
-export const WishListItemsTable = ({ gifts }: { gifts: GiftItem[] }) => {
+export const WishListItemsTable = ({
+  gifts,
+  isOwner,
+}: {
+  gifts: GiftItem[];
+  isOwner: boolean;
+  deleteGift: (giftId: string) => void;
+  reserveGift: (giftId: string) => void;
+}) => {
   return (
     <Table>
       <TableHeader>
@@ -93,13 +101,23 @@ export const WishListItemsTable = ({ gifts }: { gifts: GiftItem[] }) => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
-                    >
-                      <Gift className="mr-2 h-4 w-4" />
-                      <span>Reserve Gift</span>
-                    </Button>
+                    {!isOwner ? (
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
+                      >
+                        <Gift className="mr-2 h-4 w-4" />
+                        <span>Reserve Gift</span>
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start  hover:text-slate-300 hover:bg-slate-800 bg-red-500 text-white"
+                      >
+                        <Trash className="mr-2 h-4 w-4" />
+                        <span>Delete Gift</span>
+                      </Button>
+                    )}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

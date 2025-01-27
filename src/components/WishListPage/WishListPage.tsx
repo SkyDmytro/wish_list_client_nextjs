@@ -79,7 +79,7 @@ export const WishListPage = ({
       </div>
 
       <div className="rounded-lg border border-slate-800 bg-slate-900/50">
-        <WishListItemsTable gifts={gifts} />
+        <WishListItemsTable gifts={gifts} isOwner={isOwner} />
       </div>
     </div>
   );

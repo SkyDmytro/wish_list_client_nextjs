@@ -51,8 +51,6 @@ export const WishListPage = ({
 
   const handleDeleteGift = async () => {
     if (giftToDelete) {
-      console.log(`Deleting gift with ID: ${giftToDelete}`);
-      // TODO: Add server-side deletion logic here
       try {
         await deleteGiftRequest(giftToDelete, authUser?.token);
         toast({
@@ -85,7 +83,6 @@ export const WishListPage = ({
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
         onDelete={() => {
-          console.log('delete');
           handleDeleteGift();
         }}
       />
@@ -126,7 +123,6 @@ export const WishListPage = ({
           gifts={gifts}
           isOwner={isOwner}
           deleteGift={(giftId: string) => {
-            console.log('delete', giftId);
             setGiftToDelete(giftId);
             openDeleteModal();
           }}

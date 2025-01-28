@@ -1,7 +1,7 @@
 import { GiftItem, GiftResponse } from '@/types/wishList';
 import { wishlistUrl } from '@/utils/config';
 
-import { postRequest } from '../requests';
+import { deleteRequest, postRequest } from '../requests';
 
 type requestBodyType = Omit<GiftItem, '_id'> & {
   wishListId: string;
@@ -19,4 +19,8 @@ export const createGiftRequest = async (
   );
 
   return response;
+};
+
+export const deleteGiftRequest = async (id: string, token?: string) => {
+  return deleteRequest(`${wishlistUrl}/${id}/items`, token);
 };

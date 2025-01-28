@@ -1,12 +1,17 @@
 'use client';
 
+import { deleteGiftRequest } from '@/api/giftRequests/giftRequests';
+import { toast } from '@/hooks/use-toast';
 import { useModal } from '@/hooks/useModal';
 import { GiftItem, wishList } from '@/types/wishList';
+
+import { useState } from 'react';
 
 import { Bookmark, Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
 import { AddWishlistModal } from '../AddWishListModal/AddWishListModal';
+import { DeleteConfirmationModal } from '../DeleteConfirmationModal/DeleteConfirmationModal';
 import { Button } from '../ui/button';
 import { WishListItemsTable } from './WIshListItemsTable/WishListItemsTable';
 
@@ -22,7 +27,12 @@ export const WishListPage = ({
   totalItems: number;
 }) => {
   const { isOpen, openModal, closeModal } = useModal();
-  console.log(wishList);
+  const {
+    isOpen: isDeleteModalOpen,
+    openModal: openDeleteModal,
+    closeModal: closeDeleteModal,
+  } = useModal();
+  const [giftToDelete, setGiftToDelete] = useState<string | null>(null);
   const authUser = useSession().data?.user;
   //TODO: move this to server
   if (
@@ -39,12 +49,42 @@ export const WishListPage = ({
     );
   }
 
+  const handleDeleteGift = async () => {
+    if (giftToDelete) {
+      try {
+        await deleteGiftRequest(giftToDelete, authUser?.token);
+        toast({
+          title: 'Gift deleted successfully',
+          description: 'The gift has been deleted successfully.',
+        });
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error deleting gift',
+          description: `There was an error deleting the gift. ${error.message || ''}`,
+        });
+        console.error('Error deleting gift:', error);
+      } finally {
+        window.location.reload();
+        setGiftToDelete(null);
+        closeDeleteModal();
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
       <AddWishlistModal
         isOpen={isOpen}
         closeModal={closeModal}
         wishlistId={wishList._id}
+      />
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onDelete={() => {
+          handleDeleteGift();
+        }}
       />
       <div className="mb-6 flex items-center justify-between">
         <div>
@@ -79,7 +119,14 @@ export const WishListPage = ({
       </div>
 
       <div className="rounded-lg border border-slate-800 bg-slate-900/50">
-        <WishListItemsTable gifts={gifts} isOwner={isOwner} />
+        <WishListItemsTable
+          gifts={gifts}
+          isOwner={isOwner}
+          deleteGift={(giftId: string) => {
+            setGiftToDelete(giftId);
+            openDeleteModal();
+          }}
+        />
       </div>
     </div>
   );

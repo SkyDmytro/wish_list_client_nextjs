@@ -1,5 +1,7 @@
 'use client';
 
+import { deleteGiftRequest } from '@/api/giftRequests/giftRequests';
+import { toast } from '@/hooks/use-toast';
 import { useModal } from '@/hooks/useModal';
 import { GiftItem, wishList } from '@/types/wishList';
 
@@ -47,13 +49,29 @@ export const WishListPage = ({
     );
   }
 
-  const handleDeleteGift = () => {
+  const handleDeleteGift = async () => {
     if (giftToDelete) {
       console.log(`Deleting gift with ID: ${giftToDelete}`);
       // TODO: Add server-side deletion logic here
+      try {
+        await deleteGiftRequest(giftToDelete, authUser?.token);
+        toast({
+          title: 'Gift deleted successfully',
+          description: 'The gift has been deleted successfully.',
+        });
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error deleting gift',
+          description: `There was an error deleting the gift. ${error.message || ''}`,
+        });
+        console.error('Error deleting gift:', error);
+      } finally {
+        window.location.reload();
+        setGiftToDelete(null);
+        closeDeleteModal();
+      }
     }
-    setGiftToDelete(null);
-    closeDeleteModal();
   };
 
   return (

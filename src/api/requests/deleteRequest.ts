@@ -1,6 +1,9 @@
+import { API_URL } from '@/utils/config';
+
 export const deleteRequest = async (url: string, token?: string) => {
+  const fullUrl = `${API_URL}${url}`;
   try {
-    const response = await fetch(url, {
+    const response = await fetch(fullUrl, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

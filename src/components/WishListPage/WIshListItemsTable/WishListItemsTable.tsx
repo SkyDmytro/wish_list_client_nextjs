@@ -22,12 +22,16 @@ import Link from 'next/link';
 export const WishListItemsTable = ({
   gifts,
   isOwner,
+  deleteGift,
 }: {
   gifts: GiftItem[];
   isOwner: boolean;
   deleteGift: (giftId: string) => void;
-  reserveGift: (giftId: string) => void;
+  reserveGift?: (giftId: string) => void;
 }) => {
+  const handleDelete = (giftId: string) => () => {
+    deleteGift(giftId);
+  };
   return (
     <Table>
       <TableHeader>
@@ -115,6 +119,7 @@ export const WishListItemsTable = ({
                       <Button
                         variant="ghost"
                         className="w-full justify-start  hover:text-slate-300 hover:bg-slate-800 bg-red-500 text-white"
+                        onClick={handleDelete(gift._id)}
                       >
                         <Trash className="mr-2 h-4 w-4" />
                         <span>Delete Gift</span>

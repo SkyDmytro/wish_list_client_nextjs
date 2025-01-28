@@ -3,10 +3,13 @@
 import { useModal } from '@/hooks/useModal';
 import { GiftItem, wishList } from '@/types/wishList';
 
+import { useState } from 'react';
+
 import { Bookmark, Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
 import { AddWishlistModal } from '../AddWishListModal/AddWishListModal';
+import { DeleteConfirmationModal } from '../DeleteConfirmationModal/DeleteConfirmationModal';
 import { Button } from '../ui/button';
 import { WishListItemsTable } from './WIshListItemsTable/WishListItemsTable';
 
@@ -22,7 +25,12 @@ export const WishListPage = ({
   totalItems: number;
 }) => {
   const { isOpen, openModal, closeModal } = useModal();
-  console.log(wishList);
+  const {
+    isOpen: isDeleteModalOpen,
+    openModal: openDeleteModal,
+    closeModal: closeDeleteModal,
+  } = useModal();
+  const [giftToDelete, setGiftToDelete] = useState<string | null>(null);
   const authUser = useSession().data?.user;
   //TODO: move this to server
   if (
@@ -39,12 +47,29 @@ export const WishListPage = ({
     );
   }
 
+  const handleDeleteGift = () => {
+    if (giftToDelete) {
+      console.log(`Deleting gift with ID: ${giftToDelete}`);
+      // TODO: Add server-side deletion logic here
+    }
+    setGiftToDelete(null);
+    closeDeleteModal();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
       <AddWishlistModal
         isOpen={isOpen}
         closeModal={closeModal}
         wishlistId={wishList._id}
+      />
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onDelete={() => {
+          console.log('delete');
+          handleDeleteGift();
+        }}
       />
       <div className="mb-6 flex items-center justify-between">
         <div>
@@ -79,7 +104,15 @@ export const WishListPage = ({
       </div>
 
       <div className="rounded-lg border border-slate-800 bg-slate-900/50">
-        <WishListItemsTable gifts={gifts} isOwner={isOwner} />
+        <WishListItemsTable
+          gifts={gifts}
+          isOwner={isOwner}
+          deleteGift={(giftId: string) => {
+            console.log('delete', giftId);
+            setGiftToDelete(giftId);
+            openDeleteModal();
+          }}
+        />
       </div>
     </div>
   );

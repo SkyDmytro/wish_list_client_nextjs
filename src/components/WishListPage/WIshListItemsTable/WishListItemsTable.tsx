@@ -1,4 +1,12 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -10,14 +18,8 @@ import {
 import { GiftItem } from '@/types/wishList';
 import { currencies } from '@/utils/constants';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@radix-ui/react-dropdown-menu';
 import { ExternalLink, Gift, Menu, Trash } from 'lucide-react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export const WishListItemsTable = ({
   gifts,
@@ -29,8 +31,12 @@ export const WishListItemsTable = ({
   deleteGift: (giftId: string) => void;
   reserveGift?: (giftId: string) => void;
 }) => {
+  const router = useRouter();
   const handleDelete = (giftId: string) => () => {
     deleteGift(giftId);
+  };
+  const handleRedirectToGiftUrl = (giftUrl: string) => () => {
+    router.push(giftUrl);
   };
   return (
     <Table>
@@ -94,15 +100,14 @@ export const WishListItemsTable = ({
                   className="w-56 bg-slate-900 border border-slate-800 rounded-md"
                 >
                   <DropdownMenuItem asChild>
-                    <Link href={gift.url} className="focus:outline-none">
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
-                      >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        <span>Visit Link</span>
-                      </Button>
-                    </Link>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
+                      onClick={handleRedirectToGiftUrl(gift.url)}
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      <span>Visit Link</span>
+                    </Button>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     {!isOwner ? (

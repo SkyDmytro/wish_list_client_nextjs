@@ -5,23 +5,17 @@ import { createGiftRequestBodyType } from '@/types/requests';
 import { GiftItem, GiftResponse, currencyType } from '@/types/wishList';
 import { withToastAsync } from '@/utils/helpers';
 
-import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 
-import { ChevronDown } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 
 import { CurrencyDropDown } from '../CurrencyDropdown/CurrencyDropDown';
 import { Button } from '../ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
 import { Label } from '../ui/label';
 import { Modal } from '../ui/modal';
 import { ModalInput } from './ui/ModalInput';
+import { PriorityDropDown } from './ui/PriorityDropDown';
 
 type GiftType = Omit<GiftItem, '_id' | 'status'> & {
   currency: currencyType;
@@ -116,21 +110,6 @@ export const AddWishlistModal = ({
     [],
   );
 
-  const getPriorityColor = useCallback((priority: string) => {
-    switch (priority.toLowerCase()) {
-      case 'high':
-        return 'bg-red-500';
-      case 'medium':
-        return 'bg-yellow-500';
-      case 'low':
-        return 'bg-blue-500';
-      default:
-        return 'bg-blue-500';
-    }
-  }, []);
-
-  const priorityOptions = useMemo(() => ['High', 'Medium', 'Low'], []);
-
   return (
     <Modal
       isOpen={isOpen}
@@ -186,41 +165,12 @@ export const AddWishlistModal = ({
           >
             Priority
           </Label>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                className="w-full justify-between bg-[#1a1f29] text-gray-200 border-gray-700 hover:bg-[#252b38]"
-                variant="outline"
-              >
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-2 h-2 rounded-full ${getPriorityColor(giftData.priority)}`}
-                  />
-                  {giftData.priority}
-                </div>
-                <ChevronDown className="h-4 w-4 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="bg-[#1a1f29] border-gray-700"
-              align="end"
-            >
-              {priorityOptions.map((priority) => (
-                <DropdownMenuItem
-                  key={priority}
-                  onClick={() => handleChange('priority', priority)}
-                  className="hover:bg-[#252b38] text-gray-200"
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-2 h-2 rounded-full ${getPriorityColor(priority)}`}
-                    />
-                    {priority}
-                  </div>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <PriorityDropDown
+            prirority={giftData.priority}
+            handleChange={(value: string) => {
+              handleChange('priority', value);
+            }}
+          />
         </div>
       </div>
     </Modal>

@@ -1,13 +1,10 @@
 'use client';
 
-import { createGiftRequest } from '@/api/giftRequests/giftRequests';
-import { createGiftRequestBodyType } from '@/types/requests';
-import { GiftItem, GiftResponse, currencyType } from '@/types/wishList';
-import { withToastAsync } from '@/utils/helpers';
+import { GiftType } from '@/types/types';
+import { currencyType } from '@/types/wishList';
 
 import { ChangeEvent, useCallback, useState } from 'react';
 
-import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 
 import { CurrencyDropDown } from '../CurrencyDropdown/CurrencyDropDown';
@@ -16,10 +13,6 @@ import { Label } from '../ui/label';
 import { Modal } from '../ui/modal';
 import { ModalInput } from './ui/ModalInput';
 import { PriorityDropDown } from './ui/PriorityDropDown';
-
-type GiftType = Omit<GiftItem, '_id' | 'status'> & {
-  currency: currencyType;
-};
 
 const giftSchema = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
@@ -31,11 +24,11 @@ const giftSchema = z.object({
 export const AddWishlistModal = ({
   closeModal,
   isOpen,
-  wishlistId,
+  onAddGift,
 }: {
   closeModal: () => void;
   isOpen: boolean;
-  wishlistId: string;
+  onAddGift: (giftData: GiftType) => Promise<unknown>;
 }) => {
   const [giftData, setGiftData] = useState<GiftType>({
     name: '',
@@ -47,13 +40,6 @@ export const AddWishlistModal = ({
   const [errors, setErrors] = useState<Partial<Record<keyof GiftType, string>>>(
     {},
   );
-
-  const { data: session } = useSession();
-
-  const createGiftRequestWithToast = withToastAsync<
-    GiftResponse,
-    [createGiftRequestBodyType, string?]
-  >(createGiftRequest, 'Gift added successfully', 'Error adding gift');
 
   const handleAddGift = useCallback(async () => {
     const validationResult = giftSchema.safeParse(giftData);
@@ -67,15 +53,14 @@ export const AddWishlistModal = ({
       return;
     }
 
-    await createGiftRequestWithToast(
-      {
-        ...giftData,
-        status: 'Available',
-        wishListId: wishlistId,
-        userId: session?.user?._id,
-      },
-      session?.user?.token as string,
-    ).finally(() => {
+    try {
+      await onAddGift(giftData);
+    } catch (error) {
+      throw new Error(
+        error instanceof Error ? error.message : 'An error occurred',
+      );
+    } finally {
+      closeModal();
       setGiftData({
         name: '',
         price: 0,
@@ -84,17 +69,8 @@ export const AddWishlistModal = ({
         currency: 'USD',
       });
       setErrors({});
-      window.location.reload();
-      closeModal();
-    });
-  }, [
-    giftData,
-    createGiftRequestWithToast,
-    wishlistId,
-    session?.user?._id,
-    session?.user?.token,
-    closeModal,
-  ]);
+    }
+  }, [giftData, onAddGift, closeModal]);
 
   const handleChange = useCallback(
     (key: keyof GiftType, value: string | number) => {

@@ -1,7 +1,12 @@
 'use client';
 
-import { deleteGiftRequest } from '@/api/giftRequests/giftRequests';
+import {
+  createGiftRequest,
+  deleteGiftRequest,
+} from '@/api/giftRequests/giftRequests';
 import { useModal } from '@/hooks/useModal';
+import { createGiftRequestBodyType } from '@/types/requests';
+import { GiftType } from '@/types/types';
 import { GiftItem, wishList } from '@/types/wishList';
 import { withToastAsync } from '@/utils/helpers';
 
@@ -33,6 +38,7 @@ export const WishListPage = ({
     closeModal: closeDeleteModal,
   } = useModal();
   const [gifts, setGifts] = useState<GiftItem[]>(giftsProps);
+  console.log(gifts);
   const [giftToDelete, setGiftToDelete] = useState<string | null>(null);
   const authUser = useSession().data?.user;
 
@@ -40,6 +46,12 @@ export const WishListPage = ({
     deleteGiftRequest,
     'Gift deleted successfully',
     'Error deleting gift',
+  );
+
+  const createGiftRequestWithToast = withToastAsync(
+    createGiftRequest,
+    'Gift added successfully',
+    'Error adding gift',
   );
 
   //TODO: move this to server
@@ -56,6 +68,25 @@ export const WishListPage = ({
       </div>
     );
   }
+
+  const handleAddGift = async (giftData: GiftType) => {
+    const newGift: createGiftRequestBodyType = {
+      ...giftData,
+      status: 'Available',
+      wishListId: wishList._id,
+      userId: authUser?._id,
+    };
+    try {
+      const result = await createGiftRequestWithToast(
+        newGift,
+        authUser?.token as string,
+      );
+      setGifts([...gifts, result as GiftItem]);
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleDeleteGift = async () => {
     if (giftToDelete) {
@@ -76,7 +107,7 @@ export const WishListPage = ({
       <AddWishlistModal
         isOpen={isOpen}
         closeModal={closeModal}
-        wishlistId={wishList._id}
+        onAddGift={handleAddGift}
       />
       <DeleteConfirmationModal
         isOpen={isDeleteModalOpen}

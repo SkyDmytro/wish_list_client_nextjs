@@ -27,7 +27,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
   const isUserTheOwner = wishList.owner === session?.user?._id || false;
   return (
     <WishListPage
-      gifts={wishListItems.items || []}
+      giftsProps={wishListItems.items || []}
       isOwner={isUserTheOwner}
       wishList={wishList}
       totalItems={wishListItems.meta.totalItems || 0}

@@ -29,6 +29,11 @@ export interface GiftItem {
   url: string;
   priority: 'High' | 'Medium' | 'Low';
   status: 'Available' | 'Reserved';
+  wishListId: string;
+  userId: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
 }
 
 export type GiftResponse = {

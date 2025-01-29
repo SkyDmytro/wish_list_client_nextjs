@@ -1,8 +1,9 @@
 'use client';
 
 import { createGiftRequest } from '@/api/giftRequests/giftRequests';
-import { useToast } from '@/hooks/use-toast';
-import { GiftItem, currencyType } from '@/types/wishList';
+import { createGiftRequestBodyType } from '@/types/requests';
+import { GiftItem, GiftResponse, currencyType } from '@/types/wishList';
+import { withToastAsync } from '@/utils/helpers';
 
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
@@ -53,8 +54,12 @@ export const AddWishlistModal = ({
     {},
   );
 
-  const { toast } = useToast();
   const { data: session } = useSession();
+
+  const createGiftRequestWithToast = withToastAsync<
+    GiftResponse,
+    [createGiftRequestBodyType, string?]
+  >(createGiftRequest, 'Gift added successfully', 'Error adding gift');
 
   const handleAddGift = useCallback(async () => {
     const validationResult = giftSchema.safeParse(giftData);
@@ -68,28 +73,15 @@ export const AddWishlistModal = ({
       return;
     }
 
-    try {
-      await createGiftRequest(
-        {
-          ...giftData,
-          status: 'Available',
-          wishListId: wishlistId,
-          userId: session?.user?._id,
-        },
-        session?.user?.token as string,
-      );
-      toast({
-        title: 'Success',
-        description: 'Gift added successfully',
-        variant: 'default',
-      });
-    } catch (e: unknown) {
-      toast({
-        title: 'Something went wrong',
-        description: (e as Error).message || 'Something went wrong',
-        variant: 'destructive',
-      });
-    } finally {
+    await createGiftRequestWithToast(
+      {
+        ...giftData,
+        status: 'Available',
+        wishListId: wishlistId,
+        userId: session?.user?._id,
+      },
+      session?.user?.token as string,
+    ).finally(() => {
       setGiftData({
         name: '',
         price: 0,
@@ -100,8 +92,15 @@ export const AddWishlistModal = ({
       setErrors({});
       window.location.reload();
       closeModal();
-    }
-  }, [giftData, wishlistId, session, toast, closeModal]);
+    });
+  }, [
+    giftData,
+    createGiftRequestWithToast,
+    wishlistId,
+    session?.user?._id,
+    session?.user?.token,
+    closeModal,
+  ]);
 
   const handleChange = useCallback(
     (key: keyof GiftType, value: string | number) => {

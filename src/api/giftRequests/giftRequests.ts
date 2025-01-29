@@ -1,18 +1,14 @@
-import { GiftItem, GiftResponse } from '@/types/wishList';
+import { createGiftRequestBodyType } from '@/types/requests';
+import { GiftResponse } from '@/types/wishList';
 import { wishlistUrl } from '@/utils/config';
 
 import { deleteRequest, postRequest } from '../requests';
 
-type requestBodyType = Omit<GiftItem, '_id'> & {
-  wishListId: string;
-  userId: string;
-};
-
 export const createGiftRequest = async (
-  gift: requestBodyType,
+  gift: createGiftRequestBodyType,
   token?: string,
 ): Promise<GiftResponse> => {
-  const response = await postRequest<requestBodyType, GiftResponse>(
+  const response = await postRequest<createGiftRequestBodyType, GiftResponse>(
     `${wishlistUrl}/items`,
     gift,
     token,

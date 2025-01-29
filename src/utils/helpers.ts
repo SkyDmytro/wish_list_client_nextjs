@@ -11,6 +11,7 @@ export const withToastAsync = <T, R extends unknown[]>(
       toast({
         title: 'Success',
         description: successMessage ?? 'Success',
+        duration: 3000,
       });
       return response;
     } catch (error) {
@@ -18,6 +19,7 @@ export const withToastAsync = <T, R extends unknown[]>(
         title: 'Error',
         description: errorMessage ?? 'An error occurred',
         variant: 'destructive',
+        duration: 3000,
       });
       return error;
     }

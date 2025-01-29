@@ -1,9 +1,9 @@
 'use client';
 
 import { deleteGiftRequest } from '@/api/giftRequests/giftRequests';
-import { toast } from '@/hooks/use-toast';
 import { useModal } from '@/hooks/useModal';
 import { GiftItem, wishList } from '@/types/wishList';
+import { withToastAsync } from '@/utils/helpers';
 
 import { useState } from 'react';
 
@@ -16,12 +16,12 @@ import { Button } from '../ui/button';
 import { WishListItemsTable } from './WIshListItemsTable/WishListItemsTable';
 
 export const WishListPage = ({
-  gifts,
+  giftsProps,
   isOwner,
   wishList,
   totalItems,
 }: {
-  gifts: GiftItem[];
+  giftsProps: GiftItem[];
   wishList: wishList;
   isOwner: boolean;
   totalItems: number;
@@ -32,8 +32,16 @@ export const WishListPage = ({
     openModal: openDeleteModal,
     closeModal: closeDeleteModal,
   } = useModal();
+  const [gifts, setGifts] = useState<GiftItem[]>(giftsProps);
   const [giftToDelete, setGiftToDelete] = useState<string | null>(null);
   const authUser = useSession().data?.user;
+
+  const deleteRequestWithToast = withToastAsync(
+    deleteGiftRequest,
+    'Gift deleted successfully',
+    'Error deleting gift',
+  );
+
   //TODO: move this to server
   if (
     wishList.access === 'private' &&
@@ -41,7 +49,7 @@ export const WishListPage = ({
     !wishList.usersWithAccess.includes(authUser?._id || '')
   ) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
+      <div className="min-h-full bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
         <h1 className="text-2xl font-semibold text-white">
           No access for this wishlist
         </h1>
@@ -52,28 +60,19 @@ export const WishListPage = ({
   const handleDeleteGift = async () => {
     if (giftToDelete) {
       try {
-        await deleteGiftRequest(giftToDelete, authUser?.token);
-        toast({
-          title: 'Gift deleted successfully',
-          description: 'The gift has been deleted successfully.',
-        });
+        await deleteRequestWithToast(giftToDelete, authUser?.token);
+        setGifts(gifts.filter((gift) => gift._id !== giftToDelete));
       } catch (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error deleting gift',
-          description: `There was an error deleting the gift. ${error.message || ''}`,
-        });
-        console.error('Error deleting gift:', error);
+        console.log(error);
       } finally {
-        window.location.reload();
-        setGiftToDelete(null);
         closeDeleteModal();
+        setGiftToDelete(null);
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
+    <div className="h-full  max-h-[calc(100vh-68px)] box-border bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
       <AddWishlistModal
         isOpen={isOpen}
         closeModal={closeModal}
@@ -120,7 +119,7 @@ export const WishListPage = ({
 
       <div className="rounded-lg border border-slate-800 bg-slate-900/50">
         <WishListItemsTable
-          gifts={gifts}
+          gifts={gifts || []}
           isOwner={isOwner}
           deleteGift={(giftId: string) => {
             setGiftToDelete(giftId);

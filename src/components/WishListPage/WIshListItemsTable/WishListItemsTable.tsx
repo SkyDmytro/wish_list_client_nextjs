@@ -18,22 +18,27 @@ import {
 import { GiftItem } from '@/types/wishList';
 import { currencies } from '@/utils/constants';
 
-import { ExternalLink, Gift, Menu, Trash } from 'lucide-react';
+import { Edit, ExternalLink, Gift, Menu, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export const WishListItemsTable = ({
   gifts,
   isOwner,
   deleteGift,
+  editGift,
 }: {
   gifts: GiftItem[];
   isOwner: boolean;
   deleteGift: (giftId: string) => void;
   reserveGift?: (giftId: string) => void;
+  editGift: (gift: GiftItem) => void;
 }) => {
   const router = useRouter();
   const handleDelete = (giftId: string) => () => {
     deleteGift(giftId);
+  };
+  const handleEdit = (gift: GiftItem) => () => {
+    editGift(gift);
   };
   const handleRedirectToGiftUrl = (giftUrl: string) => () => {
     router.push(giftUrl);
@@ -109,6 +114,18 @@ export const WishListItemsTable = ({
                       <span>Visit Link</span>
                     </Button>
                   </DropdownMenuItem>
+                  {isOwner && (
+                    <DropdownMenuItem asChild>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
+                        onClick={handleEdit(gift)}
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
+                        <span>Edit Gift</span>
+                      </Button>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild>
                     {!isOwner ? (
                       gift.status === 'Available' ? (

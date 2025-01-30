@@ -1,9 +1,9 @@
 'use client';
 
 import { GiftType } from '@/types/types';
-import { currencyType } from '@/types/wishList';
+import { GiftItem, currencyType } from '@/types/wishList';
 
-import { ChangeEvent, useCallback, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import { z } from 'zod';
 
@@ -21,27 +21,27 @@ const giftSchema = z.object({
   priority: z.enum(['High', 'Medium', 'Low']),
 });
 
-export const AddWishlistModal = ({
+export const EditGiftModal = ({
   closeModal,
   isOpen,
-  onAddGift,
+  onEditGift,
+  CurrentGiftData,
 }: {
+  CurrentGiftData: GiftItem;
   closeModal: () => void;
   isOpen: boolean;
-  onAddGift: (giftData: GiftType) => Promise<unknown>;
+  onEditGift: (giftData: GiftItem) => Promise<unknown>;
 }) => {
-  const [giftData, setGiftData] = useState<GiftType>({
-    name: '',
-    price: 0,
-    url: '',
-    priority: 'Low',
-    currency: 'USD',
-  });
+  const [giftData, setGiftData] = useState<GiftItem>(CurrentGiftData);
   const [errors, setErrors] = useState<Partial<Record<keyof GiftType, string>>>(
     {},
   );
 
-  const handleAddGift = useCallback(async () => {
+  useEffect(() => {
+    setGiftData(CurrentGiftData);
+  }, [CurrentGiftData]);
+
+  const handleEditGift = useCallback(async () => {
     const validationResult = giftSchema.safeParse(giftData);
     if (!validationResult.success) {
       const fieldErrors = validationResult.error.flatten().fieldErrors;
@@ -54,23 +54,16 @@ export const AddWishlistModal = ({
     }
 
     try {
-      await onAddGift(giftData);
+      await onEditGift(giftData);
     } catch (error) {
       throw new Error(
         error instanceof Error ? error.message : 'An error occurred',
       );
     } finally {
       closeModal();
-      setGiftData({
-        name: '',
-        price: 0,
-        url: '',
-        priority: 'Low',
-        currency: 'USD',
-      });
       setErrors({});
     }
-  }, [giftData, onAddGift, closeModal]);
+  }, [giftData, onEditGift, closeModal]);
 
   const handleChange = useCallback(
     (key: keyof GiftType, value: string | number) => {
@@ -90,13 +83,13 @@ export const AddWishlistModal = ({
     <Modal
       isOpen={isOpen}
       onClose={closeModal}
-      title="Add new Gift"
+      title="Edit Gift"
       actions={
         <Button
-          onClick={handleAddGift}
+          onClick={handleEditGift}
           className="mt-4 bg-purple-600 hover:bg-purple-700 w-full"
         >
-          Add Gift
+          Confirm
         </Button>
       }
     >

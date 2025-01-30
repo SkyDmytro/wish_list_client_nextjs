@@ -8,10 +8,10 @@ import { ChangeEvent, useCallback, useState } from 'react';
 import { z } from 'zod';
 
 import { CurrencyDropDown } from '../CurrencyDropdown/CurrencyDropDown';
+import { ModalInput } from '../ui/ModalInput';
 import { Button } from '../ui/button';
 import { Label } from '../ui/label';
 import { Modal } from '../ui/modal';
-import { ModalInput } from './ui/ModalInput';
 import { PriorityDropDown } from './ui/PriorityDropDown';
 
 const giftSchema = z.object({

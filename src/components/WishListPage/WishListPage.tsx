@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  createGiftRequest,
-  deleteGiftRequest,
-} from '@/api/giftRequests/giftRequests';
-import { useModal } from '@/hooks/useModal';
-import { createGiftRequestBodyType } from '@/types/requests';
 import { GiftType } from '@/types/types';
 import { GiftItem, wishList } from '@/types/wishList';
-import { withToastAsync } from '@/utils/helpers';
 
 import { useState } from 'react';
 
@@ -17,8 +10,12 @@ import { useSession } from 'next-auth/react';
 
 import { AddWishlistModal } from '../AddWishListModal/AddWishListModal';
 import { DeleteConfirmationModal } from '../DeleteConfirmationModal/DeleteConfirmationModal';
+import { EditGiftModal } from '../EditGiftModal/EditGiftModal';
 import { Button } from '../ui/button';
 import { WishListItemsTable } from './WIshListItemsTable/WishListItemsTable';
+import { useCreateGift } from './hooks/useCreateGift';
+import { useDeleteGift } from './hooks/useDeleteGift';
+import { useEditGift } from './hooks/useEditGift';
 
 export const WishListPage = ({
   giftsProps,
@@ -31,28 +28,32 @@ export const WishListPage = ({
   isOwner: boolean;
   totalItems: number;
 }) => {
-  const { isOpen, openModal, closeModal } = useModal();
   const {
-    isOpen: isDeleteModalOpen,
-    openModal: openDeleteModal,
-    closeModal: closeDeleteModal,
-  } = useModal();
+    closeCreateGiftModal,
+    openCreateGiftModal,
+    createGift,
+    isCreateGiftModalOpen,
+  } = useCreateGift();
+
+  const {
+    closeDeleteModal,
+    deleteRequestWithToast,
+    isDeleteModalOpen,
+    openDeleteModal,
+  } = useDeleteGift();
+
+  const {
+    closeEditGiftModal,
+    isEditGiftModalOpen,
+    openEditGiftModal,
+    giftToEdit,
+    setGiftToEdit,
+    updateGift,
+  } = useEditGift();
+
   const [gifts, setGifts] = useState<GiftItem[]>(giftsProps);
-  console.log(gifts);
   const [giftToDelete, setGiftToDelete] = useState<string | null>(null);
   const authUser = useSession().data?.user;
-
-  const deleteRequestWithToast = withToastAsync(
-    deleteGiftRequest,
-    'Gift deleted successfully',
-    'Error deleting gift',
-  );
-
-  const createGiftRequestWithToast = withToastAsync(
-    createGiftRequest,
-    'Gift added successfully',
-    'Error adding gift',
-  );
 
   //TODO: move this to server
   if (
@@ -68,23 +69,35 @@ export const WishListPage = ({
       </div>
     );
   }
-
-  const handleAddGift = async (giftData: GiftType) => {
-    const newGift: createGiftRequestBodyType = {
-      ...giftData,
-      status: 'Available',
-      wishListId: wishList._id,
-      userId: authUser?._id,
-    };
+  const handleAddGift = async (gift: GiftType): Promise<void> => {
     try {
-      const result = await createGiftRequestWithToast(
-        newGift,
-        authUser?.token as string,
+      const result = await createGift(
+        gift,
+        wishList._id,
+        authUser?._id || '',
+        authUser?.token || '',
       );
-      setGifts([...gifts, result as GiftItem]);
-      console.log(result);
+      setGifts((prev) => [...prev, result as GiftItem]);
     } catch (error) {
       console.log(error);
+    } finally {
+      closeCreateGiftModal();
+    }
+  };
+
+  const handleUpdateGift = async (gift: GiftItem): Promise<void> => {
+    try {
+      const updatedGift = (await updateGift(
+        gift._id,
+        gift,
+        wishList._id,
+        authUser?._id || '',
+        authUser?.token || '',
+      )) as GiftItem;
+
+      setGifts(gifts.map((g) => (g._id === updatedGift._id ? updatedGift : g)));
+    } finally {
+      closeEditGiftModal();
     }
   };
 
@@ -105,8 +118,8 @@ export const WishListPage = ({
   return (
     <div className="h-full  max-h-[calc(100vh-68px)] box-border bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
       <AddWishlistModal
-        isOpen={isOpen}
-        closeModal={closeModal}
+        isOpen={isCreateGiftModalOpen}
+        closeModal={closeCreateGiftModal}
         onAddGift={handleAddGift}
       />
       <DeleteConfirmationModal
@@ -116,6 +129,13 @@ export const WishListPage = ({
           handleDeleteGift();
         }}
       />
+      <EditGiftModal
+        CurrentGiftData={giftToEdit || ({} as GiftItem)}
+        isOpen={isEditGiftModalOpen}
+        closeModal={closeEditGiftModal}
+        onEditGift={handleUpdateGift}
+      />
+
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-white">
@@ -132,7 +152,7 @@ export const WishListPage = ({
           <>
             <Button
               className="bg-purple-600 hover:bg-purple-700"
-              onClick={openModal}
+              onClick={openCreateGiftModal}
             >
               <Plus className="mr-2 h-4 w-4" />
               Add Gift
@@ -155,6 +175,11 @@ export const WishListPage = ({
           deleteGift={(giftId: string) => {
             setGiftToDelete(giftId);
             openDeleteModal();
+          }}
+          editGift={(gift: GiftItem) => {
+            console.log(gift);
+            setGiftToEdit(gift);
+            openEditGiftModal();
           }}
         />
       </div>

@@ -40,6 +40,8 @@ export const WishListPage = ({
     deleteRequestWithToast,
     isDeleteModalOpen,
     openDeleteModal,
+    setGiftToDelete,
+    giftToDelete,
   } = useDeleteGift();
 
   const {
@@ -52,7 +54,6 @@ export const WishListPage = ({
   } = useEditGift();
 
   const [gifts, setGifts] = useState<GiftItem[]>(giftsProps);
-  const [giftToDelete, setGiftToDelete] = useState<string | null>(null);
   const authUser = useSession().data?.user;
 
   //TODO: move this to server

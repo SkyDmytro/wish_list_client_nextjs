@@ -2,7 +2,10 @@ import { deleteGiftRequest } from '@/api/giftRequests/giftRequests';
 import { useModal } from '@/hooks/useModal';
 import { withToastAsync } from '@/utils/helpers';
 
+import { useState } from 'react';
+
 export const useDeleteGift = () => {
+  const [giftToDelete, setGiftToDelete] = useState<string | null>(null);
   const {
     isOpen: isDeleteModalOpen,
     openModal: openDeleteModal,
@@ -20,5 +23,7 @@ export const useDeleteGift = () => {
     openDeleteModal,
     closeDeleteModal,
     deleteRequestWithToast,
+    giftToDelete,
+    setGiftToDelete,
   };
 };

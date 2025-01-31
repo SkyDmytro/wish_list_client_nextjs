@@ -1,8 +1,13 @@
 import { createGiftRequestBodyType } from '@/types/requests';
 import { GiftResponse } from '@/types/wishList';
-import { wishlistUrl } from '@/utils/config';
+import { API_URL, wishlistUrl } from '@/utils/config';
 
-import { deleteRequest, postRequest, putRequest } from '../requests';
+import {
+  deleteRequest,
+  getRequest,
+  postRequest,
+  putRequest,
+} from '../requests';
 
 export const createGiftRequest = async (
   gift: createGiftRequestBodyType,
@@ -29,6 +34,28 @@ export const updateGiftRequest = async (
   return putRequest<createGiftRequestBodyType, GiftResponse>(
     `${wishlistUrl}/${id}/items`,
     gift,
+    token,
+  );
+};
+
+export const getGifts = async (
+  wishListId: string,
+  token?: string,
+  page?: number,
+  pageSize?: number,
+  sortBy?: string,
+  sortOrder?: 'asc' | 'desc',
+) => {
+  const queryParams = new URLSearchParams({
+    page: page?.toString() ?? '',
+    pageSize: pageSize?.toString() ?? '',
+    sortBy: sortBy ?? '',
+    order: sortOrder ?? '',
+  });
+  console.log(queryParams.toString());
+
+  return getRequest<GiftResponse>(
+    `${API_URL}${wishlistUrl}/${wishListId}/items?${queryParams.toString()}`,
     token,
   );
 };

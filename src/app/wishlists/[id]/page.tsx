@@ -21,12 +21,16 @@ const Page = async ({ params }: { params: { id: string } }) => {
     session?.user?.token,
   ).catch((e) => {
     console.log(e);
-    return { items: [], meta: { totalItems: 0 } };
+    return {
+      items: [],
+      meta: { totalItems: 0, page: 0, pageSize: 0, totalPages: 0 },
+    };
   });
 
   const isUserTheOwner = wishList.owner === session?.user?._id || false;
   return (
     <WishListPage
+      pagination={wishListItems.meta}
       giftsProps={wishListItems.items || []}
       isOwner={isUserTheOwner}
       wishList={wishList}

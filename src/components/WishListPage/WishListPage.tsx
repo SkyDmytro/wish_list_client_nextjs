@@ -1,11 +1,12 @@
 'use client';
 
+import { getGifts } from '@/api/giftRequests/giftRequests';
 import { GiftType } from '@/types/types';
 import { GiftItem, wishList } from '@/types/wishList';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Bookmark, Plus } from 'lucide-react';
+import { Bookmark, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
 import { AddWishlistModal } from '../AddWishListModal/AddWishListModal';
@@ -17,22 +18,34 @@ import { useCreateGift } from './hooks/useCreateGift';
 import { useDeleteGift } from './hooks/useDeleteGift';
 import { useEditGift } from './hooks/useEditGift';
 
+interface sortOptions {
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
+}
+
 export const WishListPage = ({
   giftsProps,
   isOwner,
   wishList,
   totalItems,
+  pagination,
 }: {
   giftsProps: GiftItem[];
   wishList: wishList;
   isOwner: boolean;
   totalItems: number;
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+  };
 }) => {
   const {
     closeCreateGiftModal,
-    openCreateGiftModal,
     createGift,
     isCreateGiftModalOpen,
+    openCreateGiftModal,
   } = useCreateGift();
 
   const {
@@ -40,6 +53,8 @@ export const WishListPage = ({
     deleteRequestWithToast,
     isDeleteModalOpen,
     openDeleteModal,
+    setGiftToDelete,
+    giftToDelete,
   } = useDeleteGift();
 
   const {
@@ -51,9 +66,34 @@ export const WishListPage = ({
     updateGift,
   } = useEditGift();
 
+  const [currentPage, setCurrentPage] = useState(1);
   const [gifts, setGifts] = useState<GiftItem[]>(giftsProps);
-  const [giftToDelete, setGiftToDelete] = useState<string | null>(null);
+  const [sortOptions, setSortOptions] = useState<sortOptions>({
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+  });
   const authUser = useSession().data?.user;
+
+  useEffect(() => {
+    const fetchNextGifts = async () => {
+      console.log('fetching next page', sortOptions);
+      try {
+        const response = await getGifts(
+          wishList._id,
+          authUser?.token,
+          currentPage,
+          10,
+          sortOptions.sortBy,
+          sortOptions.sortOrder,
+        );
+        setGifts(response.items);
+      } catch (error) {
+        console.error('Error fetching next page:', error);
+      }
+    };
+
+    fetchNextGifts();
+  }, [currentPage, wishList._id, sortOptions]);
 
   //TODO: move this to server
   if (
@@ -69,6 +109,7 @@ export const WishListPage = ({
       </div>
     );
   }
+
   const handleAddGift = async (gift: GiftType): Promise<void> => {
     try {
       const result = await createGift(
@@ -77,7 +118,11 @@ export const WishListPage = ({
         authUser?._id || '',
         authUser?.token || '',
       );
-      setGifts((prev) => [...prev, result as GiftItem]);
+      if (gifts.length === pagination.pageSize) {
+        setGifts((prev) => [result as GiftItem, ...prev.toSpliced(-1)]);
+      } else {
+        setGifts((prev) => [result as GiftItem, ...prev]);
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -105,7 +150,7 @@ export const WishListPage = ({
     if (giftToDelete) {
       try {
         await deleteRequestWithToast(giftToDelete, authUser?.token);
-        setGifts(gifts.filter((gift) => gift._id !== giftToDelete));
+        setGifts((prev) => prev.filter((gift) => gift._id !== giftToDelete));
       } catch (error) {
         console.log(error);
       } finally {
@@ -170,6 +215,12 @@ export const WishListPage = ({
 
       <div className="rounded-lg border border-slate-800 bg-slate-900/50">
         <WishListItemsTable
+          sortGifts={(
+            sortBy: 'price' | 'priority' | 'status',
+            sortOrder: 'asc' | 'desc',
+          ) => {
+            setSortOptions((prev) => ({ ...prev, sortBy, sortOrder }));
+          }}
           gifts={gifts || []}
           isOwner={isOwner}
           deleteGift={(giftId: string) => {
@@ -182,6 +233,35 @@ export const WishListPage = ({
             openEditGiftModal();
           }}
         />
+      </div>
+      <div className="mt-6 flex items-center justify-between">
+        <div className="text-sm text-gray-400">
+          Showing {(currentPage - 1) * pagination.pageSize + 1} to{' '}
+          {Math.min(currentPage * pagination.pageSize, pagination.totalItems)}{' '}
+          of {pagination.totalItems} gifts
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            className="border-gray-800 hover:bg-gray-900 text-black hover:text-white"
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            className="border-gray-800 hover:bg-gray-900 text-black hover:text-white"
+            onClick={() => {
+              setCurrentPage((prev) => prev + 1);
+            }}
+            disabled={currentPage === pagination.totalPages}
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

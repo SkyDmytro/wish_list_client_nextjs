@@ -18,6 +18,8 @@ import {
 import { GiftItem } from '@/types/wishList';
 import { currencies } from '@/utils/constants';
 
+import { useState } from 'react';
+
 import { Edit, ExternalLink, Gift, Menu, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -26,13 +28,19 @@ export const WishListItemsTable = ({
   isOwner,
   deleteGift,
   editGift,
+  sortGifts,
 }: {
+  sortGifts: (
+    sortBy: 'price' | 'priority' | 'status',
+    sortOrder: 'asc' | 'desc',
+  ) => void;
   gifts: GiftItem[];
   isOwner: boolean;
   deleteGift: (giftId: string) => void;
   reserveGift?: (giftId: string) => void;
   editGift: (gift: GiftItem) => void;
 }) => {
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const router = useRouter();
   const handleDelete = (giftId: string) => () => {
     deleteGift(giftId);
@@ -43,14 +51,28 @@ export const WishListItemsTable = ({
   const handleRedirectToGiftUrl = (giftUrl: string) => () => {
     router.push(giftUrl);
   };
+
+  const handleSort = (sortBy: 'price' | 'priority' | 'status') => () => {
+    setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    sortGifts(sortBy, sortOrder);
+  };
   return (
     <Table>
       <TableHeader>
         <TableRow className="border-slate-800 hover:bg-transparent">
           <TableHead className="text-slate-400">Gift Name</TableHead>
-          <TableHead className="text-slate-400">Price</TableHead>
-          <TableHead className="text-slate-400">Priority</TableHead>
-          <TableHead className="text-slate-400">Status</TableHead>
+          <TableHead className="text-slate-400" onClick={handleSort('price')}>
+            Price
+          </TableHead>
+          <TableHead
+            className="text-slate-400"
+            onClick={handleSort('priority')}
+          >
+            Priority
+          </TableHead>
+          <TableHead className="text-slate-400" onClick={handleSort('status')}>
+            Status
+          </TableHead>
           <TableHead className="text-right text-slate-400">Actions</TableHead>
         </TableRow>
       </TableHeader>

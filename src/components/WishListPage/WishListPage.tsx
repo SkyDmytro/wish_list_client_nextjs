@@ -1,6 +1,6 @@
 'use client';
 
-import { getGiftRequest } from '@/api/giftRequests/giftRequests';
+import { getGifts } from '@/api/giftRequests/giftRequests';
 import { GiftType } from '@/types/types';
 import { GiftItem, wishList } from '@/types/wishList';
 
@@ -17,6 +17,11 @@ import { WishListItemsTable } from './WIshListItemsTable/WishListItemsTable';
 import { useCreateGift } from './hooks/useCreateGift';
 import { useDeleteGift } from './hooks/useDeleteGift';
 import { useEditGift } from './hooks/useEditGift';
+
+interface sortOptions {
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
+}
 
 export const WishListPage = ({
   giftsProps,
@@ -63,16 +68,23 @@ export const WishListPage = ({
 
   const [currentPage, setCurrentPage] = useState(1);
   const [gifts, setGifts] = useState<GiftItem[]>(giftsProps);
+  const [sortOptions, setSortOptions] = useState<sortOptions>({
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+  });
   const authUser = useSession().data?.user;
 
   useEffect(() => {
     const fetchNextGifts = async () => {
+      console.log('fetching next page', sortOptions);
       try {
-        const response = await getGiftRequest(
+        const response = await getGifts(
           wishList._id,
           authUser?.token,
           currentPage,
           10,
+          sortOptions.sortBy,
+          sortOptions.sortOrder,
         );
         setGifts(response.items);
       } catch (error) {
@@ -81,7 +93,7 @@ export const WishListPage = ({
     };
 
     fetchNextGifts();
-  }, [currentPage, wishList._id]);
+  }, [currentPage, wishList._id, sortOptions]);
 
   //TODO: move this to server
   if (
@@ -203,6 +215,12 @@ export const WishListPage = ({
 
       <div className="rounded-lg border border-slate-800 bg-slate-900/50">
         <WishListItemsTable
+          sortGifts={(
+            sortBy: 'price' | 'priority' | 'status',
+            sortOrder: 'asc' | 'desc',
+          ) => {
+            setSortOptions((prev) => ({ ...prev, sortBy, sortOrder }));
+          }}
           gifts={gifts || []}
           isOwner={isOwner}
           deleteGift={(giftId: string) => {

@@ -38,14 +38,24 @@ export const updateGiftRequest = async (
   );
 };
 
-export const getGiftRequest = async (
-  id: string,
+export const getGifts = async (
+  wishListId: string,
   token?: string,
   page?: number,
   pageSize?: number,
+  sortBy?: string,
+  sortOrder?: 'asc' | 'desc',
 ) => {
+  const queryParams = new URLSearchParams({
+    page: page?.toString() ?? '',
+    pageSize: pageSize?.toString() ?? '',
+    sortBy: sortBy ?? '',
+    order: sortOrder ?? '',
+  });
+  console.log(queryParams.toString());
+
   return getRequest<GiftResponse>(
-    `${API_URL}${wishlistUrl}/${id}/items?page=${page}&pageSize=${pageSize}`,
+    `${API_URL}${wishlistUrl}/${wishListId}/items?${queryParams.toString()}`,
     token,
   );
 };

@@ -6,9 +6,17 @@ import { UserType } from '@/types/user';
 import { WishListResponse } from '@/types/wishList';
 import { API_URL, wishlistUrl } from '@/utils/config';
 
-const WishlistsPage = async ({ params }: { params: { id: string } }) => {
-  const userId = await params.id;
-  const { user: authUser } = await auth();
+import { NextPage } from 'next';
+import { Session } from 'next-auth';
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+const WishlistsPage: NextPage<PageProps> = async ({ params }) => {
+  // const userId = await params.id;
+  const { id: userId } = await params;
+
+  const { user: authUser } = ((await auth()) as Session) || {};
   const isUserTheOwner = authUser?._id === userId;
 
   const user = await getRequest<UserType>(

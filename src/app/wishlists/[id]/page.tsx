@@ -4,8 +4,13 @@ import { WishListPage } from '@/components/WishListPage/WishListPage';
 import { GiftResponse, wishList } from '@/types/wishList';
 import { API_URL, wishlistUrl } from '@/utils/config';
 
-const Page = async ({ params }: { params: { id: string } }) => {
-  const wishListId = await params.id;
+import { NextPage } from 'next';
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+const Page: NextPage<PageProps> = async ({ params }) => {
+  const { id: wishListId } = await params;
   const session = await auth();
   let access = true;
 

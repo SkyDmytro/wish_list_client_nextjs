@@ -7,6 +7,7 @@ import Credentials from 'next-auth/providers/credentials';
 // Define the types for the user object
 interface User {
   email: string;
+  _id: string;
   token: string;
   // Add other properties as needed
 }
@@ -14,6 +15,7 @@ interface User {
 // Define the types for the JWT token
 interface JWT {
   user?: User;
+  // Add other properties as needed
   accessToken?: string;
 }
 

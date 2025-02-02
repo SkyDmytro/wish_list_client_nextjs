@@ -22,7 +22,8 @@ export const getRequest = async <T>(
 
     return (await response.json()) as T;
   } catch (e: unknown) {
-    console.error('Request failed:', e.message);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+    console.error('Request failed:', (e as any).message || 'An error occurred');
     throw e;
   }
 };

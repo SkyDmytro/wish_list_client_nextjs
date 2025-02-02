@@ -5,9 +5,30 @@ import { FriendResponse, UserType } from '@/types/user';
 import { WishListResponse } from '@/types/wishList';
 import { API_URL, wishlistUrl } from '@/utils/config';
 
-const Page = async ({ params }: { params: { id: string } }) => {
+import { NextPage } from 'next';
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+// interface PageProps {
+//   params: Promise<{ id: string }>;
+// }
+
+// export async function generateMetadata({
+//   params,
+// }: PageProps): Promise<Metadata> {
+//   const id = (await params).id;
+//   // Fetch user data here if needed
+//   return {
+//     title: `User ${id}`,
+//   };
+// }
+
+const Page: NextPage<PageProps> = async ({ params }) => {
   const session = await auth();
-  const userId = await params.id;
+  // const userId = await params.id;
+  const { id: userId } = await params;
 
   const user = await getRequest<UserType>(
     `${API_URL}/api/users/profile/${userId}`,

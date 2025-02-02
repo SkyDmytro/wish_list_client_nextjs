@@ -1,6 +1,11 @@
 import { auth } from '@/auth/authSetup';
 
+import { NextResponse } from 'next/server';
+
 export default auth((req) => {
+  if (req.nextUrl.pathname.startsWith('/wishlists')) {
+    return NextResponse.next();
+  }
   if (
     !req.auth &&
     req.nextUrl.pathname !== '/login' &&

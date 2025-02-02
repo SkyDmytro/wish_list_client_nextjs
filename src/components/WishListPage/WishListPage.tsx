@@ -75,7 +75,11 @@ export const WishListPage = ({
   const authUser = useSession().data?.user;
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchNextGifts = async () => {
+      if (!isMounted) return;
+
       console.log('fetching next page', sortOptions);
       try {
         const response = await getGifts(
@@ -92,23 +96,14 @@ export const WishListPage = ({
       }
     };
 
-    fetchNextGifts();
-  }, [currentPage, wishList._id, sortOptions]);
+    if (currentPage >= 1) {
+      fetchNextGifts();
+    }
 
-  //TODO: move this to server
-  // if (
-  //   wishList.access === 'private' &&
-  //   !isOwner &&
-  //   !wishList.usersWithAccess.includes(authUser?._id || '')
-  // ) {
-  //   return (
-  //     <div className="min-h-full bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
-  //       <h1 className="text-2xl font-semibold text-white">
-  //         No access for this wishlist
-  //       </h1>
-  //     </div>
-  //   );
-  // }
+    return () => {
+      isMounted = false;
+    };
+  }, [currentPage, wishList._id, sortOptions]);
 
   const handleAddGift = async (gift: GiftType): Promise<void> => {
     try {
@@ -118,7 +113,7 @@ export const WishListPage = ({
         authUser?._id || '',
         authUser?.token || '',
       );
-      if (gifts.length === pagination.pageSize) {
+      if (gifts.length === 10) {
         setGifts((prev) => [result as GiftItem, ...prev.toSpliced(-1)]);
       } else {
         setGifts((prev) => [result as GiftItem, ...prev]);

@@ -105,21 +105,6 @@ export const WishListPage = ({
     };
   }, [currentPage, wishList._id, sortOptions]);
 
-  //TODO: move this to server
-  // if (
-  //   wishList.access === 'private' &&
-  //   !isOwner &&
-  //   !wishList.usersWithAccess.includes(authUser?._id || '')
-  // ) {
-  //   return (
-  //     <div className="min-h-full bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
-  //       <h1 className="text-2xl font-semibold text-white">
-  //         No access for this wishlist
-  //       </h1>
-  //     </div>
-  //   );
-  // }
-
   const handleAddGift = async (gift: GiftType): Promise<void> => {
     try {
       const result = await createGift(

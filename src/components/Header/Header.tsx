@@ -18,7 +18,6 @@ import { Button } from '../ui/button';
 export const Header = () => {
   const { data: session } = useSession();
   const userId = session?.user?._id || session?.user?.id;
-  console.log(userId);
 
   if (!userId) {
     return (

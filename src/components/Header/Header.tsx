@@ -18,6 +18,20 @@ import { Button } from '../ui/button';
 export const Header = () => {
   const { data: session } = useSession();
   const userId = session?.user?._id || session?.user?.id;
+  console.log(userId);
+
+  if (!userId) {
+    return (
+      <header className="flex items-center justify-between p-4 bg-gray-900 text-white h-[68px]">
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl text-gray-300 ">
+            <span className="font-bold">Sky</span>
+            Wishes
+          </h1>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="flex items-center justify-between p-4 bg-gray-900 text-white">

@@ -75,7 +75,11 @@ export const WishListPage = ({
   const authUser = useSession().data?.user;
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchNextGifts = async () => {
+      if (!isMounted) return;
+
       console.log('fetching next page', sortOptions);
       try {
         const response = await getGifts(
@@ -92,7 +96,13 @@ export const WishListPage = ({
       }
     };
 
-    fetchNextGifts();
+    if (currentPage >= 1) {
+      fetchNextGifts();
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, [currentPage, wishList._id, sortOptions]);
 
   //TODO: move this to server
@@ -118,7 +128,7 @@ export const WishListPage = ({
         authUser?._id || '',
         authUser?.token || '',
       );
-      if (gifts.length === pagination.pageSize) {
+      if (gifts.length === 10) {
         setGifts((prev) => [result as GiftItem, ...prev.toSpliced(-1)]);
       } else {
         setGifts((prev) => [result as GiftItem, ...prev]);

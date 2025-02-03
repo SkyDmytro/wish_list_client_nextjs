@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { Bookmark, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
-import { AddWishlistModal } from '../AddWishListModal/AddWishListModal';
+import { AddWishlistModal } from '../AddWishListItemModal/AddWishListModal';
 import { DeleteConfirmationModal } from '../DeleteConfirmationModal/DeleteConfirmationModal';
 import { EditGiftModal } from '../EditGiftModal/EditGiftModal';
 import { Button } from '../ui/button';

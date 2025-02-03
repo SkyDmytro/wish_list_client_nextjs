@@ -10,3 +10,8 @@ export type GiftType = Omit<
 > & {
   currency: currencyType;
 };
+
+export type WishListDataType = {
+  title: string;
+  access: 'private' | 'public';
+};

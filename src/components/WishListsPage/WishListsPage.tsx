@@ -1,6 +1,7 @@
 'use client';
 
 import { getRequest } from '@/api/requests';
+import { useModal } from '@/hooks/useModal';
 import { UserType } from '@/types/user';
 import { wishList } from '@/types/wishList';
 import { API_URL, wishlistUrl } from '@/utils/config';
@@ -10,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Gift } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
+import { AddWishlistModal } from '../AddWishListModal/AddWishListModal';
 import { Spinner } from '../Loading/Loading';
 import { Button } from '../ui/button';
 import { WishListPageHeader } from './ui/WishListPageHeader';
@@ -31,6 +33,11 @@ export const WishListsPage = ({
     totalPages: number;
   };
 }) => {
+  const {
+    isOpen: isAddWishlistModalOpen,
+    openModal: onOpenAddWishlistModal,
+    closeModal: onCloseAddWishlistModal,
+  } = useModal();
   const [currentPage, setCurrentPage] = useState(1);
   const [currentWishLists, setCurrentWishLists] = useState(wishlists);
   const { data: session, status } = useSession({ required: true });
@@ -57,6 +64,8 @@ export const WishListsPage = ({
     fetchWishlists();
   }, [currentPage, session?.accessToken]);
 
+  console.log(currentWishLists);
+
   if (status === 'loading') {
     return (
       <div className="h-full bg-gradient-to-b from-gray-900 to-black p-8 text-white">
@@ -73,7 +82,14 @@ export const WishListsPage = ({
 
   return (
     <div className="h-full w-full bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
+      <AddWishlistModal
+        isOpen={isAddWishlistModalOpen}
+        closeModal={onCloseAddWishlistModal}
+        onAddWishList={() => {}}
+      />
+
       <WishListPageHeader
+        onOpenAddWishlistModal={onOpenAddWishlistModal}
         wishListOwner={wishListOwner}
         isUserTheOwner={isUserTheOwner}
       />

@@ -1,10 +1,13 @@
 'use client';
 
 import { getRequest } from '@/api/requests';
+import { createWishListRequest } from '@/api/wishListsRequests/wishListsRequests';
 import { useModal } from '@/hooks/useModal';
+import { WishListDataType } from '@/types/types';
 import { UserType } from '@/types/user';
 import { wishList } from '@/types/wishList';
 import { API_URL, wishlistUrl } from '@/utils/config';
+import { withToastAsync } from '@/utils/helpers';
 
 import { useEffect, useState } from 'react';
 
@@ -42,6 +45,12 @@ export const WishListsPage = ({
   const [currentWishLists, setCurrentWishLists] = useState(wishlists);
   const { data: session, status } = useSession({ required: true });
 
+  const createWishListRequestWithToast = withToastAsync(
+    createWishListRequest,
+    'Wish list created successfully',
+    'Error creating wish list',
+  );
+
   useEffect(() => {
     if (!session) {
       return;
@@ -70,6 +79,7 @@ export const WishListsPage = ({
     return (
       <div className="h-full bg-gradient-to-b from-gray-900 to-black p-8 text-white">
         <WishListPageHeader
+          onOpenAddWishlistModal={() => {}}
           wishListOwner={wishListOwner}
           isUserTheOwner={isUserTheOwner}
         />
@@ -80,12 +90,26 @@ export const WishListsPage = ({
     );
   }
 
+  const handleAddWishList = async (wishListData: WishListDataType) => {
+    const newWishList = {
+      title: wishListData.title,
+      access: wishListData.access,
+      owner: wishListOwner._id,
+    };
+    try {
+      await createWishListRequestWithToast(newWishList, session?.accessToken);
+      onCloseAddWishlistModal();
+    } catch (error) {
+      console.error('Error adding wish list:', error);
+    }
+  };
+
   return (
     <div className="h-full w-full bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
       <AddWishlistModal
         isOpen={isAddWishlistModalOpen}
         closeModal={onCloseAddWishlistModal}
-        onAddWishList={() => {}}
+        onAddWishList={handleAddWishList}
       />
 
       <WishListPageHeader

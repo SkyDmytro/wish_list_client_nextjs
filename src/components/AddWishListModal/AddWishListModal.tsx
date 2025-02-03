@@ -30,7 +30,7 @@ export const AddWishlistModal = ({
 }: {
   closeModal: () => void;
   isOpen: boolean;
-  onAddWishList: (giftData: WishListDataType) => Promise<unknown>;
+  onAddWishList: (wishListData: WishListDataType) => Promise<unknown>;
 }) => {
   const [wishlistData, setwishlistData] = useState<WishListDataType>({
     title: '',

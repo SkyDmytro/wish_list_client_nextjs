@@ -97,7 +97,18 @@ export const WishListsPage = ({
       owner: wishListOwner._id,
     };
     try {
-      await createWishListRequestWithToast(newWishList, session?.accessToken);
+      const result = await createWishListRequestWithToast(
+        newWishList,
+        session?.accessToken,
+      );
+      if (currentWishLists.length === 10) {
+        setCurrentWishLists((prev) => [
+          result as wishList,
+          ...prev.toSpliced(-1),
+        ]);
+      } else {
+        setCurrentWishLists((prev) => [result as wishList, ...prev]);
+      }
       onCloseAddWishlistModal();
     } catch (error) {
       console.error('Error adding wish list:', error);

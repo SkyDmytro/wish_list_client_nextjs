@@ -7,13 +7,16 @@ import {
 } from '@/components/ui/table';
 import { wishList } from '@/types/wishList';
 
+import { actionsType } from '../types/types';
 import { TableRowComponent } from './TableRow';
 
 export const WishListsTable = ({
   wishlists,
+  actions,
 }: {
   wishlists: wishList[];
   isUserTheOwner?: boolean;
+  actions: actionsType[];
 }) => {
   return (
     <Table>
@@ -28,7 +31,13 @@ export const WishListsTable = ({
       </TableHeader>
       <TableBody>
         {wishlists.map((wishlist) => {
-          return <TableRowComponent wishlist={wishlist} key={wishlist._id} />;
+          return (
+            <TableRowComponent
+              wishlist={wishlist}
+              key={wishlist._id}
+              actions={actions}
+            />
+          );
         })}
       </TableBody>
     </Table>

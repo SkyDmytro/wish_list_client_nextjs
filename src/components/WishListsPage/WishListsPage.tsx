@@ -11,12 +11,14 @@ import { withToastAsync } from '@/utils/helpers';
 
 import { useEffect, useState } from 'react';
 
-import { ChevronLeft, ChevronRight, Gift } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, Gift } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 import { AddWishlistModal } from '../AddWishListModal/AddWishListModal';
 import { Spinner } from '../Loading/Loading';
 import { Button } from '../ui/button';
+import { actionsType } from './types/types';
 import { WishListPageHeader } from './ui/WishListPageHeader';
 import { WishListsTable } from './ui/WishListsTable';
 
@@ -44,6 +46,7 @@ export const WishListsPage = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [currentWishLists, setCurrentWishLists] = useState(wishlists);
   const { data: session, status } = useSession({ required: true });
+  const router = useRouter();
 
   const createWishListRequestWithToast = withToastAsync(
     createWishListRequest,
@@ -74,7 +77,19 @@ export const WishListsPage = ({
   }, [currentPage, session?.accessToken]);
 
   console.log(currentWishLists);
-
+  const wishlistTableActions: actionsType[] = [
+    {
+      component: (
+        <Button variant="ghost" className="text-purple-500 w-full">
+          <ExternalLink className="mr-2 h-2 w-2" />
+          View
+        </Button>
+      ),
+      onClick: (wishlistId: string) => () => {
+        router.push(`/wishlists/${wishlistId}`);
+      },
+    },
+  ];
   if (status === 'loading') {
     return (
       <div className="h-full bg-gradient-to-b from-gray-900 to-black p-8 text-white">
@@ -145,6 +160,7 @@ export const WishListsPage = ({
           </div>
         ) : (
           <WishListsTable
+            actions={wishlistTableActions}
             wishlists={currentWishLists}
             isUserTheOwner={isUserTheOwner}
           />

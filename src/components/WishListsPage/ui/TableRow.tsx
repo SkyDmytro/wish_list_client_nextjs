@@ -1,10 +1,16 @@
-import { Button } from '@/components/ui/button';
+import { WishListsTableActionsDropDown } from '@/components/WishListsTableActionsDropDown/WishListsTableActionsDropDown';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { wishList as wishListType } from '@/types/wishList';
 
-import Link from 'next/link';
+import { actionsType } from '../types/types';
 
-export const TableRowComponent = ({ wishlist }: { wishlist: wishListType }) => {
+export const TableRowComponent = ({
+  wishlist,
+  actions,
+}: {
+  wishlist: wishListType;
+  actions: actionsType[];
+}) => {
   return (
     <TableRow
       key={wishlist._id}
@@ -36,14 +42,10 @@ export const TableRowComponent = ({ wishlist }: { wishlist: wishListType }) => {
         </span>
       </TableCell>
       <TableCell className="text-right">
-        <Link href={`/wishlists/${wishlist._id}`}>
-          <Button
-            variant="ghost"
-            className="text-purple-500 hover:text-purple-400 hover:bg-purple-500/10"
-          >
-            View
-          </Button>
-        </Link>
+        <WishListsTableActionsDropDown
+          actions={actions}
+          wishlistId={wishlist._id}
+        />
       </TableCell>
     </TableRow>
   );

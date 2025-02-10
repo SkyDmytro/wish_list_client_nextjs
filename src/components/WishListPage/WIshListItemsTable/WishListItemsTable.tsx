@@ -1,12 +1,8 @@
 'use client';
 
+import { WishListItemsTableActionsDropDown } from '@/components/WishListItemsActionsDropDown/WishListItemsActionsDropDown';
+import { actionsType } from '@/components/WishListsPage/types/types';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -20,7 +16,7 @@ import { currencies } from '@/utils/constants';
 
 import { useState } from 'react';
 
-import { Edit, ExternalLink, Gift, Menu, Trash } from 'lucide-react';
+import { Edit, ExternalLink, Gift, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export const WishListItemsTable = ({
@@ -48,14 +44,72 @@ export const WishListItemsTable = ({
   const handleEdit = (gift: GiftItem) => () => {
     editGift(gift);
   };
-  const handleRedirectToGiftUrl = (giftUrl: string) => () => {
-    router.push(giftUrl);
+  const handleRedirectToGiftUrl = (item: GiftItem) => () => {
+    router.push(item.url);
   };
 
   const handleSort = (sortBy: 'price' | 'priority' | 'status') => () => {
     setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
     sortGifts(sortBy, sortOrder);
   };
+
+  const tableActions: actionsType[] = [
+    {
+      component: (
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
+        >
+          <ExternalLink className="mr-2 h-4 w-4" />
+          <span>Visit Link</span>
+        </Button>
+      ),
+      onClick: (item: GiftItem | string) =>
+        handleRedirectToGiftUrl(item as GiftItem),
+      isVisible: () => true,
+    },
+    {
+      component: (
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
+        >
+          <Edit className="mr-2 h-4 w-4" />
+          <span>Edit Gift</span>
+        </Button>
+      ),
+      onClick: (gift: GiftItem | string) => handleEdit(gift as GiftItem),
+      isVisible: () => isOwner,
+    },
+    {
+      component: (
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
+        >
+          <Gift className="mr-2 h-4 w-4" />
+          <span>Reserve Gift</span>
+        </Button>
+      ),
+      onClick: (item: GiftItem | string) => () => {
+        console.log(item);
+      },
+      isVisible: (gift: GiftItem) => !isOwner && gift.status === 'Available',
+    },
+    {
+      component: (
+        <Button
+          variant="ghost"
+          className="w-full justify-start bg-red-500 text-white hover:text-slate-300 hover:bg-slate-800"
+        >
+          <Trash className="mr-2 h-4 w-4" />
+          <span>Delete Gift</span>
+        </Button>
+      ),
+      onClick: (gift: GiftItem | string) => handleDelete(gift._id as string),
+      isVisible: () => isOwner,
+    },
+  ];
   return (
     <Table>
       <TableHeader>
@@ -111,67 +165,10 @@ export const WishListItemsTable = ({
               </span>
             </TableCell>
             <TableCell className="text-right">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-300"
-                  >
-                    <Menu className="h-4 w-4" />
-                    <span className="sr-only">Open menu</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-56 bg-slate-900 border border-slate-800 rounded-md"
-                >
-                  <DropdownMenuItem asChild>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
-                      onClick={handleRedirectToGiftUrl(gift.url)}
-                    >
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      <span>Visit Link</span>
-                    </Button>
-                  </DropdownMenuItem>
-                  {isOwner && (
-                    <DropdownMenuItem asChild>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
-                        onClick={handleEdit(gift)}
-                      >
-                        <Edit className="mr-2 h-4 w-4" />
-                        <span>Edit Gift</span>
-                      </Button>
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem asChild>
-                    {!isOwner ? (
-                      gift.status === 'Available' ? (
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
-                        >
-                          <Gift className="mr-2 h-4 w-4" />
-                          <span>Reserve Gift</span>
-                        </Button>
-                      ) : null
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start  hover:text-slate-300 hover:bg-slate-800 bg-red-500 text-white"
-                        onClick={handleDelete(gift._id)}
-                      >
-                        <Trash className="mr-2 h-4 w-4" />
-                        <span>Delete Gift</span>
-                      </Button>
-                    )}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <WishListItemsTableActionsDropDown
+                actions={tableActions}
+                item={gift}
+              />
             </TableCell>
           </TableRow>
         ))}

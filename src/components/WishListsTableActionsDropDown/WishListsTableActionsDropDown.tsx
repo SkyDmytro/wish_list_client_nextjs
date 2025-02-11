@@ -4,6 +4,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { wishList } from '@/types/wishList';
 
 import { Menu } from 'lucide-react';
 
@@ -12,9 +13,9 @@ import { Button } from '../ui/button';
 
 export const WishListsTableActionsDropDown = ({
   actions,
-  wishlistId,
+  wishlist,
 }: {
-  wishlistId: string;
+  wishlist: wishList;
   actions: actionsType[];
 }) => {
   return (
@@ -37,7 +38,7 @@ export const WishListsTableActionsDropDown = ({
           <DropdownMenuItem
             className="cursor-pointer w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800 p-0 m-0"
             key={index}
-            onClick={action.onClick(wishlistId)}
+            onClick={action.onClick(wishlist)}
           >
             {action.component}
           </DropdownMenuItem>

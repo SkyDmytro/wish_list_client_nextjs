@@ -42,10 +42,7 @@ export const TableRowComponent = ({
         </span>
       </TableCell>
       <TableCell className="text-right">
-        <WishListsTableActionsDropDown
-          actions={actions}
-          wishlistId={wishlist._id}
-        />
+        <WishListsTableActionsDropDown actions={actions} wishlist={wishlist} />
       </TableCell>
     </TableRow>
   );

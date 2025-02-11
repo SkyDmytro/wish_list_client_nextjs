@@ -1,7 +1,10 @@
 'use client';
 
 import { getRequest } from '@/api/requests';
-import { createWishListRequest } from '@/api/wishListsRequests/wishListsRequests';
+import {
+  createWishListRequest,
+  editWishListRequest,
+} from '@/api/wishListsRequests/wishListsRequests';
 import { useModal } from '@/hooks/useModal';
 import { WishListDataType } from '@/types/types';
 import { UserType } from '@/types/user';
@@ -11,11 +14,18 @@ import { withToastAsync } from '@/utils/helpers';
 
 import { useEffect, useState } from 'react';
 
-import { ChevronLeft, ChevronRight, ExternalLink, Gift } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Edit,
+  ExternalLink,
+  Gift,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 import { AddWishlistModal } from '../AddWishListModal/AddWishListModal';
+import { EditWishListModal } from '../EditWishListModal/EditWishListModal';
 import { Spinner } from '../Loading/Loading';
 import { Button } from '../ui/button';
 import { actionsType } from './types/types';
@@ -43,15 +53,28 @@ export const WishListsPage = ({
     openModal: onOpenAddWishlistModal,
     closeModal: onCloseAddWishlistModal,
   } = useModal();
+
+  const {
+    isOpen: isEditWishlistModalOpen,
+    openModal: onOpenEditWishlistModal,
+    closeModal: onCloseEditWishlistModal,
+  } = useModal();
   const [currentPage, setCurrentPage] = useState(1);
   const [currentWishLists, setCurrentWishLists] = useState(wishlists);
   const { data: session, status } = useSession({ required: true });
+  const [wishListToEdit, setWishListToEdit] = useState<wishList | null>(null);
   const router = useRouter();
 
   const createWishListRequestWithToast = withToastAsync(
     createWishListRequest,
     'Wish list created successfully',
     'Error creating wish list',
+  );
+
+  const editWishListRequestWithToast = withToastAsync(
+    editWishListRequest,
+    'Wish list edited successfully',
+    'Error editing wish list',
   );
 
   useEffect(() => {
@@ -80,13 +103,33 @@ export const WishListsPage = ({
   const wishlistTableActions: actionsType[] = [
     {
       component: (
-        <Button variant="ghost" className="text-purple-500 w-full">
+        <Button
+          variant="ghost"
+          className="text-purple-500 w-full flex justify-start"
+        >
           <ExternalLink className="mr-2 h-2 w-2" />
           View
         </Button>
       ),
-      onClick: (wishlistId: string) => () => {
-        router.push(`/wishlists/${wishlistId}`);
+      onClick: (item) => () => {
+        const id = item._id;
+        router.push(`/wishlists/${id as string}`);
+      },
+    },
+    {
+      component: (
+        <Button
+          variant="ghost"
+          className="text-purple-500 w-full flex justify-start"
+        >
+          <Edit className="mr-2 h-2 w-2" />
+          Edit Wish List
+        </Button>
+      ),
+      onClick: (item) => () => {
+        console.log(item);
+        setWishListToEdit(item as wishList);
+        onOpenEditWishlistModal();
       },
     },
   ];
@@ -130,12 +173,46 @@ export const WishListsPage = ({
     }
   };
 
+  const handleEditWishList = async (wishListData: WishListDataType) => {
+    const newWishList = {
+      ...wishListData,
+      _id: wishListToEdit?._id as string,
+    };
+    try {
+      const result = await editWishListRequestWithToast(
+        wishListToEdit?._id as string,
+        newWishList,
+        session?.accessToken,
+      );
+      onCloseEditWishlistModal();
+      setCurrentWishLists((prev) =>
+        prev.map((wishlist) => {
+          if (wishlist._id === result._id) {
+            return result as wishList;
+          }
+          return wishlist;
+        }),
+      );
+    } catch (error) {
+      console.error('Error editing wish list:', error);
+    } finally {
+      setWishListToEdit(null);
+    }
+  };
+
   return (
     <div className="h-full w-full bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
       <AddWishlistModal
         isOpen={isAddWishlistModalOpen}
         closeModal={onCloseAddWishlistModal}
         onAddWishList={handleAddWishList}
+      />
+      <EditWishListModal
+        key={wishListToEdit?._id}
+        isOpen={isEditWishlistModalOpen}
+        closeModal={onCloseEditWishlistModal}
+        currentWishList={wishListToEdit as wishList}
+        onEditWishList={handleEditWishList}
       />
 
       <WishListPageHeader

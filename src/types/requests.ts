@@ -10,3 +10,7 @@ export type createWishListRequestBodyType = {
   owner: string;
   access: 'private' | 'public';
 };
+
+export type editWishListRequestBodyType = {
+  _id: string;
+} & Partial<Omit<createWishListRequestBodyType, '_id'>>;

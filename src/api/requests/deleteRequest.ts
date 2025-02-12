@@ -1,6 +1,10 @@
 import { API_URL } from '@/utils/config';
 
-export const deleteRequest = async (url: string, token?: string) => {
+export const deleteRequest = async <T>(
+  url: string,
+  body: T,
+  token?: string,
+) => {
   const fullUrl = `${API_URL}${url}`;
   try {
     const response = await fetch(fullUrl, {
@@ -11,6 +15,7 @@ export const deleteRequest = async (url: string, token?: string) => {
         Authorization: `Bearer ${token}`,
       },
       credentials: 'include',
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {

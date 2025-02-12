@@ -5,7 +5,7 @@ import {
 import { WishListResponse } from '@/types/wishList';
 import { wishlistUrl } from '@/utils/config';
 
-import { postRequest, putRequest } from '../requests';
+import { deleteRequest, postRequest, putRequest } from '../requests';
 
 export const createWishListRequest = async (
   wishList: createWishListRequestBodyType,
@@ -26,6 +26,17 @@ export const editWishListRequest = async (
   return putRequest<editWishListRequestBodyType, WishListResponse>(
     `${wishlistUrl}/`,
     wishList,
+    token,
+  );
+};
+
+export const deleteWishListRequest = async (
+  wishListId: { wishListId: string },
+  token?: string,
+) => {
+  return deleteRequest<{ wishListId: string }>(
+    `${wishlistUrl}/`,
+    wishListId,
     token,
   );
 };

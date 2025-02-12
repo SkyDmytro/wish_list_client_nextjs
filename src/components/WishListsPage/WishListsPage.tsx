@@ -1,16 +1,11 @@
 'use client';
 
 import { getRequest } from '@/api/requests';
-import {
-  createWishListRequest,
-  editWishListRequest,
-} from '@/api/wishListsRequests/wishListsRequests';
 import { useModal } from '@/hooks/useModal';
 import { WishListDataType } from '@/types/types';
 import { UserType } from '@/types/user';
 import { wishList } from '@/types/wishList';
 import { API_URL, wishlistUrl } from '@/utils/config';
-import { withToastAsync } from '@/utils/helpers';
 
 import { useEffect, useState } from 'react';
 
@@ -20,14 +15,21 @@ import {
   Edit,
   ExternalLink,
   Gift,
+  Trash,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 import { AddWishlistModal } from '../AddWishListModal/AddWishListModal';
+import { DeleteWishListModal } from '../DeleteWishListModal/DeleteWishListModal';
 import { EditWishListModal } from '../EditWishListModal/EditWishListModal';
 import { Spinner } from '../Loading/Loading';
 import { Button } from '../ui/button';
+import {
+  createWishListRequestWithToast,
+  deleteWishListRequestWithToast,
+  editWishListRequestWithToast,
+} from './requests/wishListRequestsWishToast';
 import { actionsType } from './types/types';
 import { WishListPageHeader } from './ui/WishListPageHeader';
 import { WishListsTable } from './ui/WishListsTable';
@@ -59,23 +61,21 @@ export const WishListsPage = ({
     openModal: onOpenEditWishlistModal,
     closeModal: onCloseEditWishlistModal,
   } = useModal();
+
+  const {
+    isOpen: isDeleteWishlistModalOpen,
+    openModal: onOpenDeleteWishlistModal,
+    closeModal: onCloseDeleteWishlistModal,
+  } = useModal();
   const [currentPage, setCurrentPage] = useState(1);
   const [currentWishLists, setCurrentWishLists] = useState(wishlists);
+
   const { data: session, status } = useSession({ required: true });
   const [wishListToEdit, setWishListToEdit] = useState<wishList | null>(null);
+  const [wishListToDelete, setWishListToDelete] = useState<wishList | null>(
+    null,
+  );
   const router = useRouter();
-
-  const createWishListRequestWithToast = withToastAsync(
-    createWishListRequest,
-    'Wish list created successfully',
-    'Error creating wish list',
-  );
-
-  const editWishListRequestWithToast = withToastAsync(
-    editWishListRequest,
-    'Wish list edited successfully',
-    'Error editing wish list',
-  );
 
   useEffect(() => {
     if (!session) {
@@ -99,7 +99,6 @@ export const WishListsPage = ({
     fetchWishlists();
   }, [currentPage, session?.accessToken]);
 
-  console.log(currentWishLists);
   const wishlistTableActions: actionsType[] = [
     {
       component: (
@@ -130,6 +129,22 @@ export const WishListsPage = ({
         console.log(item);
         setWishListToEdit(item as wishList);
         onOpenEditWishlistModal();
+      },
+    },
+    {
+      component: (
+        <Button
+          variant="destructive"
+          className="bg-red-500 text-white w-full flex justify-start"
+        >
+          <Trash className="mr-2 h-2 w-2" />
+          Delete Wish List
+        </Button>
+      ),
+      onClick: (item) => () => {
+        console.log(item);
+        setWishListToDelete(item as wishList);
+        onOpenDeleteWishlistModal();
       },
     },
   ];
@@ -188,7 +203,13 @@ export const WishListsPage = ({
       setCurrentWishLists((prev) =>
         prev.map((wishlist) => {
           if (wishlist._id === result._id) {
-            return result as wishList;
+            const newWl: wishList = {
+              ...wishlist,
+              ...(result as wishList),
+              updatedAt: new Date().toISOString(),
+            };
+            console.log(newWl);
+            return newWl;
           }
           return wishlist;
         }),
@@ -200,6 +221,26 @@ export const WishListsPage = ({
     }
   };
 
+  const handeDeleteWishList = async () => {
+    if (!wishListToDelete) return;
+
+    const reqBody = {
+      wishListId: wishListToDelete?._id,
+      userId: session.user._id,
+    };
+
+    try {
+      await deleteWishListRequestWithToast(reqBody, session?.accessToken);
+      onCloseDeleteWishlistModal();
+      setCurrentWishLists((prev) =>
+        prev.filter((wishlist) => wishlist._id !== reqBody.wishListId),
+      );
+    } catch (error) {
+      console.error('Error editing wish list:', error);
+    } finally {
+      setWishListToDelete(null);
+    }
+  };
   return (
     <div className="h-full w-full bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
       <AddWishlistModal
@@ -213,6 +254,12 @@ export const WishListsPage = ({
         closeModal={onCloseEditWishlistModal}
         currentWishList={wishListToEdit as wishList}
         onEditWishList={handleEditWishList}
+      />
+
+      <DeleteWishListModal
+        isDeleteWishlistModalOpen={isDeleteWishlistModalOpen}
+        onCloseDeleteWishlistModal={onCloseDeleteWishlistModal}
+        onDeleteWishList={handeDeleteWishList}
       />
 
       <WishListPageHeader

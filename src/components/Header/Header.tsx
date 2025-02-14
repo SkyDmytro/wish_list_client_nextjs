@@ -14,6 +14,7 @@ import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 import { Button } from '../ui/button';
+import { Search } from './ui/Search';
 
 export const Header = () => {
   const { data: session } = useSession();
@@ -41,6 +42,7 @@ export const Header = () => {
         </h1>
       </div>
       <div className="flex items-center gap-2">
+        <Search />
         <Button
           variant="ghost"
           size="default"

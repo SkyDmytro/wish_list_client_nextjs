@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen bg-gradient-to-b from-gray-900 to-black`}
       >
         <div id="modal-root"></div>
         <SessionProvider>

@@ -76,6 +76,7 @@ export const WishListsPage = ({
     null,
   );
   const router = useRouter();
+  console.log(isUserTheOwner);
 
   useEffect(() => {
     if (!session) {
@@ -105,7 +106,7 @@ export const WishListsPage = ({
         component: (
           <Button
             variant="ghost"
-            className="text-purple-500 w-full flex justify-start"
+            className="text-slate-400 hover:bg-slate-700 hover:text-slate-300 w-full flex justify-start"
           >
             <ExternalLink className="mr-2 h-2 w-2" />
             View
@@ -115,12 +116,13 @@ export const WishListsPage = ({
           const id = item._id;
           router.push(`/wishlists/${id as string}`);
         },
+        isVisible: () => true,
       },
       {
         component: (
           <Button
             variant="ghost"
-            className="text-purple-500 w-full flex justify-start"
+            className=" text-slate-400 hover:bg-slate-700 hover:text-slate-300 w-full flex justify-start"
           >
             <Edit className="mr-2 h-2 w-2" />
             Edit Wish List
@@ -131,6 +133,7 @@ export const WishListsPage = ({
           setWishListToEdit(item as wishList);
           onOpenEditWishlistModal();
         },
+        isVisible: () => isUserTheOwner,
       },
       {
         component: (
@@ -147,6 +150,7 @@ export const WishListsPage = ({
           setWishListToDelete(item as wishList);
           onOpenDeleteWishlistModal();
         },
+        isVisible: () => isUserTheOwner,
       },
     ],
     [onOpenDeleteWishlistModal, onOpenEditWishlistModal, router],

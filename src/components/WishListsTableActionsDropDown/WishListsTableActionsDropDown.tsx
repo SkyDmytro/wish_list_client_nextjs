@@ -34,15 +34,18 @@ export const WishListsTableActionsDropDown = ({
         className=" bg-slate-900 border border-slate-800 rounded-md"
         align="end"
       >
-        {actions.map((action, index) => (
-          <DropdownMenuItem
-            className="cursor-pointer w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800 p-0 m-0"
-            key={index}
-            onClick={action.onClick(wishlist)}
-          >
-            {action.component}
-          </DropdownMenuItem>
-        ))}
+        {actions.map((action, index) => {
+          if (action.isVisible && !action.isVisible(wishlist)) return null;
+          return (
+            <DropdownMenuItem
+              className="cursor-pointer w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800 p-0 m-0"
+              key={index}
+              onClick={action.onClick(wishlist)}
+            >
+              {action.component}
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -7,7 +7,7 @@ import { UserType } from '@/types/user';
 import { wishList } from '@/types/wishList';
 import { API_URL, wishlistUrl } from '@/utils/config';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   ChevronLeft,
@@ -99,55 +99,59 @@ export const WishListsPage = ({
     fetchWishlists();
   }, [currentPage, session?.accessToken]);
 
-  const wishlistTableActions: actionsType[] = [
-    {
-      component: (
-        <Button
-          variant="ghost"
-          className="text-purple-500 w-full flex justify-start"
-        >
-          <ExternalLink className="mr-2 h-2 w-2" />
-          View
-        </Button>
-      ),
-      onClick: (item) => () => {
-        const id = item._id;
-        router.push(`/wishlists/${id as string}`);
+  const wishlistTableActions: actionsType[] = useMemo(
+    () => [
+      {
+        component: (
+          <Button
+            variant="ghost"
+            className="text-slate-400 hover:bg-slate-700 hover:text-slate-300 w-full flex justify-start"
+          >
+            <ExternalLink className="mr-2 h-2 w-2" />
+            View
+          </Button>
+        ),
+        onClick: (item) => () => {
+          const id = item._id;
+          router.push(`/wishlists/${id as string}`);
+        },
+        isVisible: () => true,
       },
-    },
-    {
-      component: (
-        <Button
-          variant="ghost"
-          className="text-purple-500 w-full flex justify-start"
-        >
-          <Edit className="mr-2 h-2 w-2" />
-          Edit Wish List
-        </Button>
-      ),
-      onClick: (item) => () => {
-        console.log(item);
-        setWishListToEdit(item as wishList);
-        onOpenEditWishlistModal();
+      {
+        component: (
+          <Button
+            variant="ghost"
+            className=" text-slate-400 hover:bg-slate-700 hover:text-slate-300 w-full flex justify-start"
+          >
+            <Edit className="mr-2 h-2 w-2" />
+            Edit Wish List
+          </Button>
+        ),
+        onClick: (item) => () => {
+          setWishListToEdit(item as wishList);
+          onOpenEditWishlistModal();
+        },
+        isVisible: () => isUserTheOwner,
       },
-    },
-    {
-      component: (
-        <Button
-          variant="destructive"
-          className="bg-red-500 text-white w-full flex justify-start"
-        >
-          <Trash className="mr-2 h-2 w-2" />
-          Delete Wish List
-        </Button>
-      ),
-      onClick: (item) => () => {
-        console.log(item);
-        setWishListToDelete(item as wishList);
-        onOpenDeleteWishlistModal();
+      {
+        component: (
+          <Button
+            variant="destructive"
+            className="bg-red-500 text-white w-full flex justify-start"
+          >
+            <Trash className="mr-2 h-2 w-2" />
+            Delete Wish List
+          </Button>
+        ),
+        onClick: (item) => () => {
+          setWishListToDelete(item as wishList);
+          onOpenDeleteWishlistModal();
+        },
+        isVisible: () => isUserTheOwner,
       },
-    },
-  ];
+    ],
+    [onOpenDeleteWishlistModal, onOpenEditWishlistModal, router],
+  );
   if (status === 'loading') {
     return (
       <div className="h-full bg-gradient-to-b from-gray-900 to-black p-8 text-white">
@@ -208,7 +212,6 @@ export const WishListsPage = ({
               ...(result as wishList),
               updatedAt: new Date().toISOString(),
             };
-            console.log(newWl);
             return newWl;
           }
           return wishlist;
@@ -241,6 +244,7 @@ export const WishListsPage = ({
       setWishListToDelete(null);
     }
   };
+
   return (
     <div className="h-full w-full bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
       <AddWishlistModal

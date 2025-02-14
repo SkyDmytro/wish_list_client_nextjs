@@ -14,12 +14,13 @@ import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 import { Button } from '../ui/button';
+import { Search } from './ui/Search';
 
 export const Header = () => {
   const { data: session } = useSession();
   const userId = session?.user?._id || session?.user?.id;
-
-  if (!userId) {
+  let isSearchPage = false;
+  if (!userId || !window) {
     return (
       <header className="flex items-center justify-between p-4 bg-gray-900 text-white h-[68px]">
         <div className="flex items-center gap-2">
@@ -31,6 +32,9 @@ export const Header = () => {
       </header>
     );
   }
+  if (window) {
+    isSearchPage = window.location.pathname.includes('search');
+  }
 
   return (
     <header className="flex items-center justify-between p-4 bg-gray-900 text-white">
@@ -41,6 +45,7 @@ export const Header = () => {
         </h1>
       </div>
       <div className="flex items-center gap-2">
+        {!isSearchPage && <Search />}
         <Button
           variant="ghost"
           size="default"

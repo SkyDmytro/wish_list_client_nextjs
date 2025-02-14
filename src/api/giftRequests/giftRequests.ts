@@ -52,7 +52,6 @@ export const getGifts = async (
     sortBy: sortBy ?? '',
     order: sortOrder ?? '',
   });
-  console.log(queryParams.toString());
 
   return getRequest<GiftResponse>(
     `${API_URL}${wishlistUrl}/${wishListId}/items?${queryParams.toString()}`,

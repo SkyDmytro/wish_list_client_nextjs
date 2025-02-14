@@ -80,7 +80,6 @@ export const WishListPage = ({
     const fetchNextGifts = async () => {
       if (!isMounted) return;
 
-      console.log('fetching next page', sortOptions);
       try {
         const response = await getGifts(
           wishList._id,
@@ -223,7 +222,6 @@ export const WishListPage = ({
             openDeleteModal();
           }}
           editGift={(gift: GiftItem) => {
-            console.log(gift);
             setGiftToEdit(gift);
             openEditGiftModal();
           }}

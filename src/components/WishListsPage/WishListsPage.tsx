@@ -76,7 +76,6 @@ export const WishListsPage = ({
     null,
   );
   const router = useRouter();
-  console.log(isUserTheOwner);
 
   useEffect(() => {
     if (!session) {
@@ -129,7 +128,6 @@ export const WishListsPage = ({
           </Button>
         ),
         onClick: (item) => () => {
-          console.log(item);
           setWishListToEdit(item as wishList);
           onOpenEditWishlistModal();
         },
@@ -146,7 +144,6 @@ export const WishListsPage = ({
           </Button>
         ),
         onClick: (item) => () => {
-          console.log(item);
           setWishListToDelete(item as wishList);
           onOpenDeleteWishlistModal();
         },
@@ -215,7 +212,6 @@ export const WishListsPage = ({
               ...(result as wishList),
               updatedAt: new Date().toISOString(),
             };
-            console.log(newWl);
             return newWl;
           }
           return wishlist;

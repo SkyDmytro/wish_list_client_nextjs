@@ -58,3 +58,7 @@ export const getGifts = async (
     token,
   );
 };
+
+export const reserveGiftRequest = async (id: string, token?: string) => {
+  return postRequest(`${wishlistUrl}/${id}/reserve`, {}, token);
+};

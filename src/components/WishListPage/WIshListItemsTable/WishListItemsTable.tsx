@@ -25,6 +25,7 @@ export const WishListItemsTable = ({
   deleteGift,
   editGift,
   sortGifts,
+  reserveGift,
 }: {
   sortGifts: (
     sortBy: 'price' | 'priority' | 'status',
@@ -33,7 +34,7 @@ export const WishListItemsTable = ({
   gifts: GiftItem[];
   isOwner: boolean;
   deleteGift: (giftId: string) => void;
-  reserveGift?: (giftId: string) => void;
+  reserveGift: (gift: GiftItem) => void;
   editGift: (gift: GiftItem) => void;
 }) => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -51,6 +52,10 @@ export const WishListItemsTable = ({
   const handleSort = (sortBy: 'price' | 'priority' | 'status') => () => {
     setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
     sortGifts(sortBy, sortOrder);
+  };
+
+  const handleReserveGift = (gift: GiftItem) => {
+    reserveGift(gift);
   };
 
   const tableActions: actionsType[] = [
@@ -92,7 +97,7 @@ export const WishListItemsTable = ({
         </Button>
       ),
       onClick: (item: GiftItem | string) => () => {
-        console.log(item);
+        handleReserveGift(item as GiftItem);
       },
       isVisible: (gift: GiftItem) => !isOwner && gift.status === 'Available',
     },

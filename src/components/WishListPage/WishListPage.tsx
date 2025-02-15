@@ -1,8 +1,9 @@
 'use client';
 
-import { getGifts } from '@/api/giftRequests/giftRequests';
+import { getGifts, reserveGiftRequest } from '@/api/giftRequests/giftRequests';
 import { GiftType } from '@/types/types';
 import { GiftItem, wishList } from '@/types/wishList';
+import { withToastAsync } from '@/utils/helpers';
 
 import { useEffect, useState } from 'react';
 
@@ -73,6 +74,11 @@ export const WishListPage = ({
     sortOrder: 'desc',
   });
   const authUser = useSession().data?.user;
+  const reserveGiftRequestWithToast = withToastAsync(
+    reserveGiftRequest,
+    'Gift reserved successfully',
+    'Error reserving gift',
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -154,6 +160,19 @@ export const WishListPage = ({
     }
   };
 
+  const handleReserveGift = async (gift: GiftItem) => {
+    try {
+      await reserveGiftRequestWithToast(gift._id, authUser?.token);
+      setGifts((prev) =>
+        prev.map((g) =>
+          g._id === gift._id ? { ...g, status: 'Reserved' } : g,
+        ),
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="h-full  max-h-[calc(100vh-68px)] box-border bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
       <AddWishlistModal
@@ -224,6 +243,9 @@ export const WishListPage = ({
           editGift={(gift: GiftItem) => {
             setGiftToEdit(gift);
             openEditGiftModal();
+          }}
+          reserveGift={(gift) => {
+            handleReserveGift(gift);
           }}
         />
       </div>

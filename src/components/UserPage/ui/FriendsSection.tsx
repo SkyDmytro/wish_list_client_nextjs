@@ -27,12 +27,10 @@ export const FriendsSection = ({
                 <User2Icon className="w-full h-full" color="gray" />
               </div>
               <div>
-                <p className="sm:hidden md:flex text-sm font-medium text-white">
+                <p className=" md:flex text-sm font-medium text-white">
                   Friend
                 </p>
-                <p className="sm:text-white text-xs md:text-gray-400">
-                  {friend.name}
-                </p>
+                <p className="text-xs text-gray-400">{friend.name}</p>
               </div>
             </div>
           </Link>

@@ -16,19 +16,23 @@ export const FriendsSection = ({
       {friends.length === 0 && (
         <p className="text-gray-400">User has no friends yet.</p>
       )}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-3">
         {friends.map((friend) => (
           <Link key={friend._id} href={`/users/${friend._id}`}>
             <div
               key={friend._id}
               className="flex items-center space-x-3 rounded-lg border border-gray-800 bg-gray-900/50 p-3"
             >
-              <div className="h-10 w-10 rounded-full bg-gray-800  overflow-hidden">
-                <User2Icon className="h-10 w-10 " color="gray" />
+              <div className="sm:h-5 sm:w-5 md:h-10 md:w-10 rounded-full bg-gray-800  overflow-hidden">
+                <User2Icon className="w-full h-full" color="gray" />
               </div>
               <div>
-                <p className="text-sm font-medium text-white">Friend</p>
-                <p className="text-xs text-gray-400">{friend.name}</p>
+                <p className="sm:hidden md:flex text-sm font-medium text-white">
+                  Friend
+                </p>
+                <p className="sm:text-white text-xs md:text-gray-400">
+                  {friend.name}
+                </p>
               </div>
             </div>
           </Link>

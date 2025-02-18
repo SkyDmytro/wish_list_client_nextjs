@@ -23,7 +23,7 @@ export const createGiftRequest = async (
 };
 
 export const deleteGiftRequest = async (id: string, token?: string) => {
-  return deleteRequest(`${wishlistUrl}/${id}/items`, token);
+  return deleteRequest(`${wishlistUrl}/${id}/items`, {}, token);
 };
 
 export const updateGiftRequest = async (

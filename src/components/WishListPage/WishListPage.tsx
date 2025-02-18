@@ -1,15 +1,17 @@
 'use client';
 
 import { getGifts, reserveGiftRequest } from '@/api/giftRequests/giftRequests';
+import { useModal } from '@/hooks/useModal';
 import { GiftType } from '@/types/types';
 import { GiftItem, wishList } from '@/types/wishList';
 import { withToastAsync } from '@/utils/helpers';
 
 import { useEffect, useState } from 'react';
 
-import { Bookmark, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { Bookmark, ChevronLeft, ChevronRight, Plus, Users } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
+import { AddUserToWishListModal } from '../AddUserToWishListModal/AddUserToWishListModal';
 import { AddWishlistModal } from '../AddWishListItemModal/AddWishListModal';
 import { DeleteConfirmationModal } from '../DeleteConfirmationModal/DeleteConfirmationModal';
 import { EditGiftModal } from '../EditGiftModal/EditGiftModal';
@@ -67,6 +69,12 @@ export const WishListPage = ({
     updateGift,
   } = useEditGift();
 
+  const {
+    closeModal: closeAddUserToWishListModal,
+    isOpen: isAddUserToWishListModalOpen,
+    openModal: openAddUserToWishListModal,
+  } = useModal();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [gifts, setGifts] = useState<GiftItem[]>(giftsProps);
   const [sortOptions, setSortOptions] = useState<sortOptions>({
@@ -85,6 +93,7 @@ export const WishListPage = ({
 
     const fetchNextGifts = async () => {
       if (!isMounted) return;
+      if (!authUser) return;
 
       try {
         const response = await getGifts(
@@ -194,6 +203,15 @@ export const WishListPage = ({
         onEditGift={handleUpdateGift}
       />
 
+      <AddUserToWishListModal
+        currentWishList={wishList}
+        isOpen={isAddUserToWishListModalOpen}
+        onClose={() => {
+          window.location.reload();
+          closeAddUserToWishListModal();
+        }}
+      />
+
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-white">
@@ -207,7 +225,16 @@ export const WishListPage = ({
           </p>
         </div>
         {isOwner ? (
-          <>
+          <div className="flex self-end gap-4 sm:flex-col md:flex-row">
+            {wishList.access === 'private' && (
+              <Button
+                className="bg-purple-600 hover:bg-purple-700"
+                onClick={openAddUserToWishListModal}
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Add User
+              </Button>
+            )}
             <Button
               className="bg-purple-600 hover:bg-purple-700"
               onClick={openCreateGiftModal}
@@ -215,7 +242,7 @@ export const WishListPage = ({
               <Plus className="mr-2 h-4 w-4" />
               Add Gift
             </Button>
-          </>
+          </div>
         ) : (
           <>
             <Button className="bg-purple-600 hover:bg-purple-700">

@@ -18,7 +18,7 @@ export const Search = () => {
     <div className="relative w-full h-full flex items-center gap-2">
       <SearchIcon className="absolute left-2" />
       <Input
-        placeholder="Search..."
+        placeholder="Search users..."
         className="pl-10 border-0 rounded-full focus:border-white focus:border-2"
         onKeyUp={handleEnter}
       />

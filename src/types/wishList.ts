@@ -1,4 +1,5 @@
 import { currencyType } from './types';
+import { UserType } from './user';
 
 export type wishList = {
   _id: string;
@@ -8,7 +9,7 @@ export type wishList = {
   updatedAt?: string;
   __v?: number;
   access: 'private' | 'public';
-  usersWithAccess: string[];
+  usersWithAccess: UserType[];
 };
 
 export type WishListResponse = {

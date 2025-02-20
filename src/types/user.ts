@@ -22,6 +22,8 @@ export type UserType = {
   createdAt: string;
   updatedAt: string;
   avatar?: string;
+  friendsRequestsReceived: string[];
+  friendsRequestsSent: string[];
   __v: number;
   token?: string;
   friends: UserType[];

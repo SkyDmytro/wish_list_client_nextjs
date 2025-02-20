@@ -1,12 +1,16 @@
 'use client';
 
+import {
+  addFriendRequest,
+  deleteFriendRequest,
+} from '@/api/friendsRequests/friendsRequests';
 import { UserType } from '@/types/user';
 import { wishList } from '@/types/wishList';
+import { withToastAsync } from '@/utils/helpers';
 
 import { useCallback, useState } from 'react';
 
-import { UserPlus } from 'lucide-react';
-import { Session } from 'next-auth';
+import { UserMinus, UserPlus } from 'lucide-react';
 import { SessionContextValue, useSession } from 'next-auth/react';
 
 import { Button } from '../ui/button';
@@ -15,7 +19,12 @@ import { ProfileCard } from './ui/ProfileCard';
 import { StatsCard } from './ui/StatsCard';
 import { WishListsSection } from './ui/WishListsSection';
 
-type isFriendsType = 'friends' | 'not-friends' | null;
+type isFriendsType =
+  | 'friends'
+  | 'not-friends'
+  | 'request-sent'
+  | 'request-received'
+  | null;
 const isFriends = (
   authUser: SessionContextValue | null,
   currentUser: UserType,
@@ -27,10 +36,13 @@ const isFriends = (
   if (authUser.status === 'unauthenticated') return null;
   if (authUser.data?.user?._id === currentUser._id) return null;
 
-  const isFriend = currentUser.friends.some((friend) => {
-    return friend._id === authUser.data?.user?._id;
-  });
+  const isFriend = currentUser.friends.includes(authUser.data?.user?._id);
   if (isFriend) return 'friends';
+  if (currentUser.friendsRequestsSent.includes(authUser.data?.user?._id))
+    return 'request-received';
+  if (currentUser.friendsRequestsReceived.includes(authUser.data?.user?._id))
+    return 'request-sent';
+
   return 'not-friends';
 };
 
@@ -44,21 +56,45 @@ export const UserPage = ({
   wishlists: { items: wishList[]; totalWishlists: number };
 }) => {
   const [user] = useState(userProps);
+
+  const addFriendWithToast = withToastAsync(
+    addFriendRequest,
+    'Friend request sent successfully',
+    'Error sending friend request',
+  );
+
+  const deleteFriendWithToast = withToastAsync(
+    deleteFriendRequest,
+    'Friend request deleted successfully',
+    'Error deleting friend request',
+  );
   const authUser = useSession();
-  const handleAddFriend = () => {
-    console.log('add friend');
+
+  console.log('aauser', authUser);
+  console.log(user);
+  const handleAddFriend = async () => {
+    try {
+      await addFriendWithToast(user._id, authUser?.data?.user?.token);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  const handleRemoveFriend = () => {
-    console.log('remove friend');
+  const handleRemoveFriend = async () => {
+    try {
+      await deleteFriendWithToast(user._id, authUser?.data?.user?.token);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const getRenderedItem = useCallback(() => {
     const isFriend = isFriends(authUser, user);
+    console.log(isFriend);
     if (isFriend === 'friends') {
       return (
         <Button
-          onClick={handleAddFriend}
+          onClick={handleRemoveFriend}
           variant="ghost"
           className="rounded-lg border border-gray-700 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700  hover:text-white"
         >
@@ -69,13 +105,48 @@ export const UserPage = ({
     } else if (isFriend === 'not-friends') {
       return (
         <Button
-          onClick={handleRemoveFriend}
+          onClick={handleAddFriend}
           variant="ghost"
           className="rounded-lg border border-gray-700 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700  hover:text-white"
         >
           <UserPlus className="mr-2 h-4 w-4" />
           Add Friend
         </Button>
+      );
+    }
+    if (isFriend === 'request-sent') {
+      return (
+        <Button
+          onClick={handleRemoveFriend}
+          variant="ghost"
+          className="rounded-lg border border-gray-700 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700  hover:text-white"
+        >
+          <UserPlus className="mr-2 h-4 w-4" />
+          Cancel Request
+        </Button>
+      );
+    }
+
+    if (isFriend === 'request-received') {
+      return (
+        <>
+          <Button
+            onClick={handleAddFriend}
+            variant="ghost"
+            className="rounded-lg border border-gray-700 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700  hover:text-white"
+          >
+            <UserPlus className="mr-2 h-4 w-4" />
+            Accept Request
+          </Button>
+          <Button
+            onClick={handleRemoveFriend}
+            variant="ghost"
+            className="rounded-lg border border-gray-700 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700  hover:text-white"
+          >
+            <UserMinus className="mr-2 h-4 w-4" />
+            Decline Request
+          </Button>
+        </>
       );
     }
     return null;

@@ -24,6 +24,7 @@ export type UserType = {
   avatar?: string;
   __v: number;
   token?: string;
+  friends: UserType[];
 };
 
 export type FriendResponse = {

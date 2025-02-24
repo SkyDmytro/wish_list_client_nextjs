@@ -54,14 +54,21 @@ const Page: NextPage<PageProps> = async ({ params }) => {
     .then((res) => res)
     .catch((e) => {
       console.log(e);
-      return { items: [], meta: { total: 0 } };
+      return {
+        items: {
+          friends: [],
+          friendsRequestsSent: [],
+          friendsRequestsReceived: [],
+        },
+        meta: { total: 0 },
+      };
     });
 
   return (
     <UserPage
       userProps={user || ({} as UserType)}
       friends={{
-        items: friends.items,
+        items: friends.items.friends,
         totalFriends: friends.meta.total,
       }}
       wishlists={{

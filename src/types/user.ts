@@ -30,7 +30,11 @@ export type UserType = {
 };
 
 export type FriendResponse = {
-  items: UserType[];
+  items: {
+    friends: UserType[];
+    friendsRequestsSent: UserType[];
+    friendsRequestsReceived: UserType[];
+  };
   meta: {
     total: number;
     page: number;

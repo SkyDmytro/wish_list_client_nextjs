@@ -90,7 +90,6 @@ export const UserPage = ({
 
   const getRenderedItem = useCallback(() => {
     const isFriend = isFriends(authUser, user);
-    console.log(isFriend);
     if (isFriend === 'friends') {
       return (
         <Button

@@ -18,7 +18,7 @@ export const Friends = ({
       )}
       {friends.map((friend) => (
         <div
-          className="sm:w-1/2 md:w-1/3 mx-auto h-10 flex items-center justify-between bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-300 rounded-full"
+          className="sm:w-1/2 md:w-1/3 mx-auto p-2 flex items-center justify-between bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-300 rounded-full"
           key={friend._id}
         >
           <div className="flex">

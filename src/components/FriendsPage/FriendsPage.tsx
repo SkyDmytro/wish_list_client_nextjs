@@ -64,42 +64,18 @@ export const FriendsPage = ({
 
   const getActions = useCallback(
     (friend: UserType) => {
-      if (currentList === 'friends') {
-        return (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full"
-            onClick={handleDeleteFriend(friend._id)}
-          >
-            <X />
-          </Button>
-        );
-      }
-
-      if (currentList === 'sent') {
-        return (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full"
-            onClick={handleDeleteFriend(friend._id)}
-          >
-            <X />
-          </Button>
-        );
-      }
-
       return (
         <>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full"
-            onClick={handleAddFriend(friend._id)}
-          >
-            <Plus />
-          </Button>
+          {currentList === 'recieved' && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full"
+              onClick={handleAddFriend(friend._id)}
+            >
+              <Plus />
+            </Button>
+          )}
           <Button
             onClick={handleDeleteFriend(friend._id)}
             variant="ghost"

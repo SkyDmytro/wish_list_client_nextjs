@@ -110,13 +110,17 @@ export const AddWishlistModal = ({
             handleChange('name', e.target.value)
           }
         />
-        <div className="flex gap-2 items-end flex-1">
+        <div className="flex gap-2 items-end flex-1 justify-between">
           <ModalInput
+            className="flex-1"
             inputId="price"
-            inputValue={giftData.price}
+            inputValue={giftData.price.toString()}
             labelText="Price"
             error={errors.price}
-            onChange={(e) => handleChange('price', Number(e.target.value))}
+            onChange={(e) => {
+              if (Number.isNaN(Number(e.target.value))) return;
+              handleChange('price', Number(e.target.value));
+            }}
           />
           <div className="w-1/3">
             <CurrencyDropDown

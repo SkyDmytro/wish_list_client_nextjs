@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 import { DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu';
-import { Gift, LogOut, User } from 'lucide-react';
+import { Gift, LogOut, User, Users } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
@@ -88,6 +88,15 @@ export const Header = () => {
               >
                 <Gift className="mr-2 h-4 w-4" />
                 My Lists
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/users/${userId}/friends`}
+                className="flex w-full cursor-pointer items-center "
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Friends
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

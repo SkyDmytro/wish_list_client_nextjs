@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  addFriendRequest,
-  deleteFriendRequest,
-} from '@/api/friendsRequests/friendsRequests';
 import { FriendResponse, UserType } from '@/types/user';
-import { withToastAsync } from '@/utils/helpers';
 
 import { useCallback, useMemo, useState } from 'react';
 
@@ -16,6 +11,7 @@ import { Button } from '../ui/button';
 import { FriendPageHeaderActions } from './types/ui';
 import { Friends } from './ui/Friends';
 import { FriendsPageHeader } from './ui/FriendsPageHeader';
+import { addFriendWithToast, deleteFriendWithToast } from './utils/helpers';
 
 export const FriendsPage = ({
   friendsProps,
@@ -28,18 +24,6 @@ export const FriendsPage = ({
     'friends' | 'recieved' | 'sent'
   >('friends');
 
-  const addFriendWithToast = withToastAsync(
-    addFriendRequest,
-    'Friend request sent successfully',
-    'Error sending friend request',
-  );
-
-  const deleteFriendWithToast = withToastAsync(
-    deleteFriendRequest,
-    'Friend request deleted successfully',
-    'Error deleting friend request',
-  );
-
   const handleAddFriend = useCallback(
     (friendId: string) => async () => {
       try {
@@ -48,7 +32,7 @@ export const FriendsPage = ({
         console.log(e);
       }
     },
-    [addFriendWithToast, authUser.data?.user.token],
+    [authUser.data?.user.token],
   );
 
   const handleDeleteFriend = useCallback(
@@ -59,7 +43,7 @@ export const FriendsPage = ({
         console.log(e);
       }
     },
-    [authUser.data?.user.token, deleteFriendWithToast],
+    [authUser.data?.user.token],
   );
 
   const getActions = useCallback(

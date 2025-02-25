@@ -1,5 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 import { ChangeEvent } from 'react';
 
@@ -16,6 +17,7 @@ export const ModalInput = ({
   inputId,
   error,
   prefix,
+  className,
 }: {
   labelText: string;
   inputValue: string | number;
@@ -23,9 +25,10 @@ export const ModalInput = ({
   inputId: string;
   error?: string;
   prefix?: string;
+  className?: string;
 }): JSX.Element => {
   return (
-    <div className="space-y-2">
+    <div className={cn('space-y-2', className)}>
       <Label className="text-sm font-medium text-gray-300" htmlFor={inputId}>
         {labelText}
       </Label>

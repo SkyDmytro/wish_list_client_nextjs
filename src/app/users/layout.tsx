@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="w-full h-full">
+    <main className="w-full h-full flex flex-col">
       <Header />
       {children}
       <Toast />

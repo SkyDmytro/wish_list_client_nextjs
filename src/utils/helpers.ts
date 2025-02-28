@@ -25,3 +25,8 @@ export const withToastAsync = <T, R extends unknown[]>(
     }
   };
 };
+
+export const isUnderDevelopment = () => {
+  const token = localStorage.getItem('dev');
+  return token === 'true';
+};

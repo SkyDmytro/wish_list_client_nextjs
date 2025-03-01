@@ -18,6 +18,7 @@ export const ModalInput = ({
   error,
   prefix,
   className,
+  inputType = 'text',
 }: {
   labelText: string;
   inputValue: string | number;
@@ -26,6 +27,7 @@ export const ModalInput = ({
   error?: string;
   prefix?: string;
   className?: string;
+  inputType?: 'text' | 'email' | 'password';
 }): JSX.Element => {
   return (
     <div className={cn('space-y-2', className)}>
@@ -39,6 +41,7 @@ export const ModalInput = ({
           </span>
         )}
         <Input
+          type={inputType}
           className={`w-full bg-[#1a1f29] text-gray-200 border-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder:text-gray-500 ${prefix ? 'pl-7' : ''}`}
           placeholder={`Enter ${labelText.toLowerCase()}`}
           id={inputId}

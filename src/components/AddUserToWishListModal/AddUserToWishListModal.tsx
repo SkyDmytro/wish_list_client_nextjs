@@ -1,4 +1,4 @@
-import { DropDownUserSearch } from '@/feature/DropDownUserSearch/components/DropDownUserSearch';
+import { DropDownUserSearch } from '@/features/DropDownUserSearch/components/DropDownUserSearch';
 import { wishList } from '@/types/wishList';
 
 import { Modal } from '../ui/modal';

@@ -1,12 +1,11 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
+import { ModalInput } from '@/components/ui/ModalInput';
+import { Button } from '@/components/ui/button';
 
+import { Label } from '@radix-ui/react-label';
 import { LogOut, Settings } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-
-import { Button } from '../../ui/button';
-import { Label } from '../../ui/label';
 
 export const UserBlock = () => {
   const authUser = useSession();
@@ -27,33 +26,40 @@ export const UserBlock = () => {
       <div className="space-y-6">
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              defaultValue={authUser.data?.user?.name ?? ''}
+            <ModalInput
+              onChange={() => {}}
+              labelText="Username"
+              inputId="username"
+              inputType="text"
+              inputValue={authUser.data?.user?.name ?? ''}
               className="border-gray-700"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
-            <Input
-              id="email"
-              type="email"
-              defaultValue={authUser.data?.user?.email}
+            <ModalInput
+              onChange={() => {}}
+              labelText="Email Address"
+              inputId="email"
+              inputType="email"
+              inputValue={authUser.data?.user?.email.toString() ?? ''}
               className="border-gray-700"
             />
           </div>
 
-          <div className="space-y-2 space-x-2">
-            <Label htmlFor="language">Interface Language</Label>
+          <div className="space-y-2">
+            <Label
+              htmlFor="language"
+              className="text-sm font-medium text-gray-300"
+            >
+              Language
+            </Label>
             <select
               id="language"
-              defaultValue="en"
-              className="border-gray-700 bg-slate-800 text-white p-2 rounded"
+              className="w-full p-2 rounded-md border-gray-700 bg-[#1a1f29] text-gray-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder:text-gray-500"
             >
               <option value="en">English</option>
-              <option value="ua">Українська</option>
+              <option value="es">Ukrainian</option>
             </select>
           </div>
         </div>

@@ -30,6 +30,7 @@ export interface GiftItem {
   url: string;
   priority: 'High' | 'Medium' | 'Low';
   status: 'Available' | 'Reserved';
+  reservedBy: string | null;
   wishListId: string;
   userId: string;
   createdAt?: string;

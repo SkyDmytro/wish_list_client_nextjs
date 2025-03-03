@@ -24,11 +24,11 @@ export const Modal = ({
   return (
     <Portal>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 "
         onClick={onClose}
       >
         <div
-          className="relative md:w-1/4 sm:w-2/3  rounded-2xl bg-gray-900 text-white shadow-lg p-6"
+          className="relative md:w-1/4 sm:w-2/3 h-1/2 rounded-2xl bg-gray-900 text-white shadow-lg p-6"
           onClick={(e) => e.stopPropagation()}
         >
           <header className="flex justify-between items-center mb-4">

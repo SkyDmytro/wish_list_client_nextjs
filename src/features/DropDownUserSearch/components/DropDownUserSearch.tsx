@@ -75,7 +75,7 @@ export const DropDownUserSearch = ({
   }, [inputValue]);
 
   return (
-    <div className="">
+    <div className="min-h-2/3">
       <div className="my-2">
         <UsersWithAccessComponent
           users={UsersWithAccess}

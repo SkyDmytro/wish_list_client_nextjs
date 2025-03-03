@@ -43,7 +43,7 @@ export const WishListItemsTableActionsDropDown = ({
                 key={index}
                 onClick={action.onClick(item)}
               >
-                {action.component}
+                {action.component(item)}
               </DropdownMenuItem>
             ),
         )}

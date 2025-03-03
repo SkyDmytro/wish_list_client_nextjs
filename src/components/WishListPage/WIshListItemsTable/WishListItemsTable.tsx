@@ -17,6 +17,7 @@ import { currencies } from '@/utils/constants';
 import { useState } from 'react';
 
 import { Edit, ExternalLink, Gift, Trash } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 export const WishListItemsTable = ({
@@ -37,8 +38,10 @@ export const WishListItemsTable = ({
   reserveGift: (gift: GiftItem) => void;
   editGift: (gift: GiftItem) => void;
 }) => {
+  const authUser = useSession().data?.user;
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const router = useRouter();
+
   const handleDelete = (giftId: string) => () => {
     deleteGift(giftId);
   };
@@ -60,7 +63,7 @@ export const WishListItemsTable = ({
 
   const tableActions: actionsType[] = [
     {
-      component: (
+      component: () => (
         <Button
           variant="ghost"
           className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
@@ -74,7 +77,7 @@ export const WishListItemsTable = ({
       isVisible: () => true,
     },
     {
-      component: (
+      component: () => (
         <Button
           variant="ghost"
           className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
@@ -87,22 +90,30 @@ export const WishListItemsTable = ({
       isVisible: () => isOwner,
     },
     {
-      component: (
+      component: (item: GiftItem) => (
         <Button
           variant="ghost"
           className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
         >
           <Gift className="mr-2 h-4 w-4" />
-          <span>Reserve Gift</span>
+          <span>
+            {item.status === 'Available'
+              ? 'Reserve gift'
+              : item.reservedBy === authUser?._id
+                ? 'Cancel reservation'
+                : ''}
+          </span>
         </Button>
       ),
       onClick: (item: GiftItem | string) => () => {
         handleReserveGift(item as GiftItem);
       },
-      isVisible: (gift: GiftItem) => !isOwner && gift.status === 'Available',
+      isVisible: (gift: GiftItem) =>
+        (!isOwner && gift.status === 'Available') ||
+        (gift.reservedBy === authUser?._id && gift.status === 'Reserved'),
     },
     {
-      component: (
+      component: () => (
         <Button
           variant="ghost"
           className="w-full justify-start bg-red-500 text-white hover:text-slate-300 hover:bg-slate-800"

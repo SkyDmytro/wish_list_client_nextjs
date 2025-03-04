@@ -16,7 +16,14 @@ import { currencies } from '@/utils/constants';
 
 import { useState } from 'react';
 
-import { Edit, ExternalLink, Gift, Trash } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronUp,
+  Edit,
+  ExternalLink,
+  Gift,
+  Trash,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
@@ -40,6 +47,9 @@ export const WishListItemsTable = ({
 }) => {
   const authUser = useSession().data?.user;
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortBy, setSortBy] = useState<'price' | 'priority' | 'status' | null>(
+    null,
+  );
   const router = useRouter();
 
   const handleDelete = (giftId: string) => () => {
@@ -54,6 +64,7 @@ export const WishListItemsTable = ({
 
   const handleSort = (sortBy: 'price' | 'priority' | 'status') => () => {
     setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    setSortBy(sortBy);
     sortGifts(sortBy, sortOrder);
   };
 
@@ -122,26 +133,51 @@ export const WishListItemsTable = ({
           <span>Delete Gift</span>
         </Button>
       ),
-      onClick: (gift: GiftItem | string) => handleDelete(gift._id as string),
+      onClick: (gift: GiftItem) => handleDelete(gift._id as string),
       isVisible: () => isOwner,
     },
   ];
+
   return (
     <Table>
       <TableHeader>
         <TableRow className="border-slate-800 hover:bg-transparent">
           <TableHead className="text-slate-400">Gift Name</TableHead>
           <TableHead className="text-slate-400" onClick={handleSort('price')}>
-            Price
+            <div className="flex items-center">
+              Price
+              {sortBy === 'price' &&
+                (sortOrder === 'asc' ? (
+                  <ChevronUp className="ml-2 h-4 w-4" />
+                ) : (
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                ))}
+            </div>
           </TableHead>
           <TableHead
             className="text-slate-400"
             onClick={handleSort('priority')}
           >
-            Priority
+            <div className="flex items-center">
+              Priority
+              {sortBy === 'priority' &&
+                (sortOrder === 'asc' ? (
+                  <ChevronUp className="ml-2 h-4 w-4" />
+                ) : (
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                ))}
+            </div>
           </TableHead>
           <TableHead className="text-slate-400" onClick={handleSort('status')}>
-            Status
+            <div className="flex items-center">
+              Status
+              {sortBy === 'status' &&
+                (sortOrder === 'asc' ? (
+                  <ChevronUp className="ml-2 h-4 w-4" />
+                ) : (
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                ))}
+            </div>
           </TableHead>
           <TableHead className="text-right text-slate-400">Actions</TableHead>
         </TableRow>

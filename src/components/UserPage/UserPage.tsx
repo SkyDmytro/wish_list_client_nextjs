@@ -1,12 +1,7 @@
 'use client';
 
-import {
-  addFriendRequest,
-  deleteFriendRequest,
-} from '@/api/friendsRequests/friendsRequests';
 import { UserType } from '@/types/user';
 import { wishList } from '@/types/wishList';
-import { withToastAsync } from '@/utils/helpers';
 
 import { useState } from 'react';
 

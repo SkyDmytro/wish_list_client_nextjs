@@ -9,6 +9,7 @@ interface User {
   email: string;
   _id: string;
   token: string;
+  name: string;
   // Add other properties as needed
 }
 
@@ -90,3 +91,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: '/login',
   },
 } as NextAuthOptions);
+
+declare module 'next-auth' {
+  interface Session {
+    accessToken: string;
+  }
+}

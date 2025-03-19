@@ -83,8 +83,7 @@ export const WishListItemsTable = ({
           <span>Visit Link</span>
         </Button>
       ),
-      onClick: (item: GiftItem | string) =>
-        handleRedirectToGiftUrl(item as GiftItem),
+      onClick: (item) => handleRedirectToGiftUrl(item as GiftItem),
       isVisible: () => true,
     },
     {
@@ -97,11 +96,11 @@ export const WishListItemsTable = ({
           <span>Edit Gift</span>
         </Button>
       ),
-      onClick: (gift: GiftItem | string) => handleEdit(gift as GiftItem),
+      onClick: (gift) => handleEdit(gift as GiftItem),
       isVisible: () => isOwner,
     },
     {
-      component: (item: GiftItem) => (
+      component: (item) => (
         <Button
           variant="ghost"
           className="w-full justify-start text-slate-400 hover:text-slate-300 hover:bg-slate-800"
@@ -116,10 +115,10 @@ export const WishListItemsTable = ({
           </span>
         </Button>
       ),
-      onClick: (item: GiftItem | string) => () => {
+      onClick: (item) => () => {
         handleReserveGift(item as GiftItem);
       },
-      isVisible: (gift: GiftItem) =>
+      isVisible: (gift) =>
         (!isOwner && gift.status === 'Available') ||
         (gift.reservedBy === authUser?._id && gift.status === 'Reserved'),
     },
@@ -133,7 +132,7 @@ export const WishListItemsTable = ({
           <span>Delete Gift</span>
         </Button>
       ),
-      onClick: (gift: GiftItem) => handleDelete(gift._id as string),
+      onClick: (gift) => handleDelete((gift as GiftItem)._id),
       isVisible: () => isOwner,
     },
   ];

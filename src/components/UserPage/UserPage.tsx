@@ -8,43 +8,16 @@ import { UserType } from '@/types/user';
 import { wishList } from '@/types/wishList';
 import { withToastAsync } from '@/utils/helpers';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
-import { UserMinus, UserPlus } from 'lucide-react';
-import { SessionContextValue, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
-import { Button } from '../ui/button';
+import { useFriendRequests } from './hooks/useFriendRequests';
+import { FriendActions } from './ui/FriendActions';
 import { FriendsSection } from './ui/FriendsSection';
 import { ProfileCard } from './ui/ProfileCard';
 import { StatsCard } from './ui/StatsCard';
 import { WishListsSection } from './ui/WishListsSection';
-
-type isFriendsType =
-  | 'friends'
-  | 'not-friends'
-  | 'request-sent'
-  | 'request-received'
-  | null;
-const isFriends = (
-  authUser: SessionContextValue | null,
-  currentUser: UserType,
-): isFriendsType => {
-  if (!authUser) {
-    return null;
-  }
-  if (authUser.status === 'loading') return null;
-  if (authUser.status === 'unauthenticated') return null;
-  if (authUser.data?.user?._id === currentUser._id) return null;
-
-  const isFriend = currentUser.friends.includes(authUser.data?.user?._id);
-  if (isFriend) return 'friends';
-  if (currentUser.friendsRequestsSent.includes(authUser.data?.user?._id))
-    return 'request-received';
-  if (currentUser.friendsRequestsReceived.includes(authUser.data?.user?._id))
-    return 'request-sent';
-
-  return 'not-friends';
-};
 
 export const UserPage = ({
   userProps,
@@ -56,100 +29,11 @@ export const UserPage = ({
   wishlists: { items: wishList[]; totalWishlists: number };
 }) => {
   const [user] = useState(userProps);
-
-  const addFriendWithToast = withToastAsync(
-    addFriendRequest,
-    'Friend request sent successfully',
-    'Error sending friend request',
-  );
-
-  const deleteFriendWithToast = withToastAsync(
-    deleteFriendRequest,
-    'Friend request deleted successfully',
-    'Error deleting friend request',
-  );
   const authUser = useSession();
-
-  console.log('aauser', authUser);
-  console.log(user);
-  const handleAddFriend = async () => {
-    try {
-      await addFriendWithToast(user._id, authUser?.data?.user?.token);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const handleRemoveFriend = async () => {
-    try {
-      await deleteFriendWithToast(user._id, authUser?.data?.user?.token);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const getRenderedItem = useCallback(() => {
-    const isFriend = isFriends(authUser, user);
-    if (isFriend === 'friends') {
-      return (
-        <Button
-          onClick={handleRemoveFriend}
-          variant="ghost"
-          className="rounded-lg border border-gray-700 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700  hover:text-white"
-        >
-          <UserPlus className="mr-2 h-4 w-4" />
-          Delete Friend
-        </Button>
-      );
-    } else if (isFriend === 'not-friends') {
-      return (
-        <Button
-          onClick={handleAddFriend}
-          variant="ghost"
-          className="rounded-lg border border-gray-700 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700  hover:text-white"
-        >
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add Friend
-        </Button>
-      );
-    }
-    if (isFriend === 'request-sent') {
-      return (
-        <Button
-          onClick={handleRemoveFriend}
-          variant="ghost"
-          className="rounded-lg border border-gray-700 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700  hover:text-white"
-        >
-          <UserPlus className="mr-2 h-4 w-4" />
-          Cancel Request
-        </Button>
-      );
-    }
-
-    if (isFriend === 'request-received') {
-      return (
-        <>
-          <Button
-            onClick={handleAddFriend}
-            variant="ghost"
-            className="rounded-lg border border-gray-700 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700  hover:text-white"
-          >
-            <UserPlus className="mr-2 h-4 w-4" />
-            Accept Request
-          </Button>
-          <Button
-            onClick={handleRemoveFriend}
-            variant="ghost"
-            className="rounded-lg border border-gray-700 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700  hover:text-white"
-          >
-            <UserMinus className="mr-2 h-4 w-4" />
-            Decline Request
-          </Button>
-        </>
-      );
-    }
-    return null;
-  }, [authUser, user]);
+  const { handleAddFriend, handleRemoveFriend } = useFriendRequests(
+    user,
+    authUser,
+  );
 
   return (
     <div
@@ -158,7 +42,14 @@ export const UserPage = ({
     >
       <div className="w-full max-w-2xl space-y-6">
         <ProfileCard
-          renderItem={getRenderedItem}
+          renderItem={() => (
+            <FriendActions
+              authUser={authUser}
+              user={user}
+              handleAddFriend={handleAddFriend}
+              handleRemoveFriend={handleRemoveFriend}
+            />
+          )}
           avatar={user.avatar || ''}
           name={user.name}
           date={user.createdAt}

@@ -1,7 +1,9 @@
+import { GiftItem } from '@/types/wishList';
+
 import { ReactNode } from 'react';
 
 export interface actionsType {
-  component: (item: unknown) => ReactNode;
-  onClick: (item: unknown) => () => void;
-  isVisible?: (item: unknown) => boolean;
+  component: <T extends GiftItem>(item: T) => ReactNode;
+  onClick: <T>(item: T) => () => void;
+  isVisible?: (item: GiftItem) => boolean;
 }

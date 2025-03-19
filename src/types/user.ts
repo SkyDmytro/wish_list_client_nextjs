@@ -26,7 +26,7 @@ export type UserType = {
   friendsRequestsSent: string[];
   __v: number;
   token?: string;
-  friends: UserType[];
+  friends: string[];
 };
 
 export type FriendResponse = {

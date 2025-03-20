@@ -35,7 +35,7 @@ export default function LoginForm() {
       await signIn('credentials', {
         email: email,
         password: password,
-        redirect: '/users/',
+        // redirect: '/users/',
       });
     } catch (e) {
       setErrors({

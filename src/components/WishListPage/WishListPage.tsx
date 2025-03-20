@@ -1,30 +1,20 @@
 'use client';
 
-import { getGifts, reserveGiftRequest } from '@/api/giftRequests/giftRequests';
-import { useModal } from '@/hooks/useModal';
-import { GiftType } from '@/types/types';
 import { GiftItem, wishList } from '@/types/wishList';
-import { withToastAsync } from '@/utils/helpers';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { Bookmark, ChevronLeft, ChevronRight, Plus, Users } from 'lucide-react';
+import { User } from 'next-auth';
 import { useSession } from 'next-auth/react';
 
 import { AddUserToWishListModal } from '../AddUserToWishListModal/AddUserToWishListModal';
-import { AddWishlistModal } from '../AddWishListItemModal/AddWishListModal';
+import { AddWishlistItemModal } from '../AddWishListItemModal/AddWishListModal';
 import { DeleteConfirmationModal } from '../DeleteConfirmationModal/DeleteConfirmationModal';
 import { EditGiftModal } from '../EditGiftModal/EditGiftModal';
 import { Button } from '../ui/button';
-import { WishListItemsTable } from './WIshListItemsTable/WishListItemsTable';
-import { useCreateGift } from './hooks/useCreateGift';
-import { useDeleteGift } from './hooks/useDeleteGift';
-import { useEditGift } from './hooks/useEditGift';
-
-interface sortOptions {
-  sortBy: string;
-  sortOrder: 'asc' | 'desc';
-}
+import { useWishList } from './hooks/useWishList';
+import { WishListItemsTable } from './ui/WIshListItemsTable/WishListItemsTable';
 
 export const WishListPage = ({
   giftsProps,
@@ -44,147 +34,45 @@ export const WishListPage = ({
     totalPages: number;
   };
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const authUser = useSession().data?.user as User;
   const {
-    closeCreateGiftModal,
-    createGift,
+    // Modals
     isCreateGiftModalOpen,
+    closeCreateGiftModal,
     openCreateGiftModal,
-  } = useCreateGift();
-
-  const {
-    closeDeleteModal,
-    deleteRequestWithToast,
     isDeleteModalOpen,
+    closeDeleteModal,
     openDeleteModal,
-    setGiftToDelete,
-    giftToDelete,
-  } = useDeleteGift();
-
-  const {
-    closeEditGiftModal,
     isEditGiftModalOpen,
+    closeEditGiftModal,
     openEditGiftModal,
+    isAddUserToWishListModalOpen,
+    closeAddUserToWishListModal,
+    openAddUserToWishListModal,
+
+    // Gift Management
+    gifts,
     giftToEdit,
     setGiftToEdit,
-    updateGift,
-  } = useEditGift();
+    setGiftToDelete,
+    handleAddGift,
+    handleDeleteGift,
+    handleUpdateGift,
+    handleReserveGift,
 
-  const {
-    closeModal: closeAddUserToWishListModal,
-    isOpen: isAddUserToWishListModalOpen,
-    openModal: openAddUserToWishListModal,
-  } = useModal();
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [gifts, setGifts] = useState<GiftItem[]>(giftsProps);
-  const [sortOptions, setSortOptions] = useState<sortOptions>({
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
+    // Sorting
+    setSortOptions,
+  } = useWishList({
+    authUser,
+    currentPage,
+    giftsProps,
+    wishList,
   });
-  const authUser = useSession().data?.user;
-  const reserveGiftRequestWithToast = withToastAsync(
-    reserveGiftRequest,
-    'Gift reserved successfully',
-    'Error reserving gift',
-  );
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchNextGifts = async () => {
-      if (!isMounted) return;
-      if (!authUser) return;
-
-      try {
-        const response = await getGifts(
-          wishList._id,
-          authUser?.token,
-          currentPage,
-          10,
-          sortOptions.sortBy,
-          sortOptions.sortOrder,
-        );
-        setGifts(response.items);
-      } catch (error) {
-        console.error('Error fetching next page:', error);
-      }
-    };
-
-    if (currentPage >= 1) {
-      fetchNextGifts();
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [currentPage, wishList._id, sortOptions]);
-
-  const handleAddGift = async (gift: GiftType): Promise<void> => {
-    try {
-      const result = await createGift(
-        gift,
-        wishList._id,
-        authUser?._id || '',
-        authUser?.token || '',
-      );
-      if (gifts.length === 10) {
-        setGifts((prev) => [result as GiftItem, ...prev.toSpliced(-1)]);
-      } else {
-        setGifts((prev) => [result as GiftItem, ...prev]);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      closeCreateGiftModal();
-    }
-  };
-
-  const handleUpdateGift = async (gift: GiftItem): Promise<void> => {
-    try {
-      const updatedGift = (await updateGift(
-        gift._id,
-        gift,
-        wishList._id,
-        authUser?._id || '',
-        authUser?.token || '',
-      )) as GiftItem;
-
-      setGifts(gifts.map((g) => (g._id === updatedGift._id ? updatedGift : g)));
-    } finally {
-      closeEditGiftModal();
-    }
-  };
-
-  const handleDeleteGift = async () => {
-    if (giftToDelete) {
-      try {
-        await deleteRequestWithToast(giftToDelete, authUser?.token);
-        setGifts((prev) => prev.filter((gift) => gift._id !== giftToDelete));
-      } catch (error) {
-        console.log(error);
-      } finally {
-        closeDeleteModal();
-        setGiftToDelete(null);
-      }
-    }
-  };
-
-  const handleReserveGift = async (gift: GiftItem) => {
-    try {
-      await reserveGiftRequestWithToast(gift._id, authUser?.token);
-      setGifts((prev) =>
-        prev.map((g) =>
-          g._id === gift._id ? { ...g, status: 'Reserved' } : g,
-        ),
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <div className="h-full  max-h-[calc(100vh-68px)] box-border bg-gradient-to-b from-gray-900 to-black p-8 text-white ">
-      <AddWishlistModal
+      <AddWishlistItemModal
         isOpen={isCreateGiftModalOpen}
         closeModal={closeCreateGiftModal}
         onAddGift={handleAddGift}

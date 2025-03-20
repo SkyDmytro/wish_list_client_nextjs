@@ -147,9 +147,9 @@ export const WishListItemsTable = ({
               Price
               {sortBy === 'price' &&
                 (sortOrder === 'asc' ? (
-                  <ChevronUp className="ml-2 h-4 w-4" />
-                ) : (
                   <ChevronDown className="ml-2 h-4 w-4" />
+                ) : (
+                  <ChevronUp className="ml-2 h-4 w-4" />
                 ))}
             </div>
           </TableHead>

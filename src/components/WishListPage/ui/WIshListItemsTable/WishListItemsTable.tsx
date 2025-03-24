@@ -46,10 +46,11 @@ export const WishListItemsTable = ({
   editGift: (gift: GiftItem) => void;
 }) => {
   const authUser = useSession().data?.user;
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [sortBy, setSortBy] = useState<'price' | 'priority' | 'status' | null>(
-    null,
-  );
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [sortBy, setSortBy] = useState<
+    'price' | 'priority' | 'status' | 'createdAt' | null
+  >('createdAt');
+
   const router = useRouter();
 
   const handleDelete = (giftId: string) => () => {

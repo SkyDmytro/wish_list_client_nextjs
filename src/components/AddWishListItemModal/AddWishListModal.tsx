@@ -1,7 +1,7 @@
 'use client';
 
 import { GiftType } from '@/types/types';
-import { currencyType } from '@/types/wishList';
+import { currencyType } from '@/types/types';
 
 import { ChangeEvent, useCallback, useState } from 'react';
 

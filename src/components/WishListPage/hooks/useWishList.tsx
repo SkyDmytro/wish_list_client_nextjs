@@ -124,8 +124,15 @@ export const useWishList = ({
     try {
       await reserveGiftRequestWithToast(gift._id, authUser?.token);
       setGifts((prev) =>
-        prev.map((g) =>
-          g._id === gift._id ? { ...g, status: 'Reserved' } : g,
+        prev.map((item) =>
+          item._id === gift._id
+            ? {
+                ...item,
+                status: item.status === 'Available' ? 'Reserved' : 'Available',
+                reservedBy:
+                  item.reservedBy === authUser?._id ? null : authUser?._id,
+              }
+            : item,
         ),
       );
     } catch (error) {

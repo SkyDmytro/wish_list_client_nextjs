@@ -28,7 +28,7 @@ export const Modal = ({
         onClick={onClose}
       >
         <div
-          className="relative md:w-1/4 sm:w-2/3 h-1/2 rounded-2xl bg-gray-900 text-white shadow-lg p-6"
+          className="relative md:w-1/4 sm:w-2/3 min-h-1/2 max-h-2/3 rounded-2xl bg-gray-900 text-white shadow-lg p-6"
           onClick={(e) => e.stopPropagation()}
         >
           <header className="flex justify-between items-center mb-4">
@@ -37,7 +37,7 @@ export const Modal = ({
               <XIcon />
             </button>
           </header>
-          <main>{children}</main>
+          <main className="overflow">{children}</main>
           {actions && <footer className="mt-4">{actions}</footer>}
         </div>
       </div>

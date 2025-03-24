@@ -31,7 +31,7 @@ export const WishListItemsTableActionsDropDown = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className=" bg-slate-900 border border-slate-800 rounded-md"
+        className=" bg-slate-900 border border-slate-800 "
         align="end"
       >
         {actions.map(

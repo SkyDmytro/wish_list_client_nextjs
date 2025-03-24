@@ -1,27 +1,19 @@
 import { API_URL } from '@/utils/config';
 
 import NextAuth, { Session } from 'next-auth';
-import type { NextAuthOptions } from 'next-auth';
+import type { NextAuthOptions, User } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
 // Define the types for the user object
-interface User {
-  email: string;
-  _id: string;
-  token: string;
-  name: string;
-  // Add other properties as needed
-}
 
 // Define the types for the JWT token
-interface JWT {
-  user?: User;
-  // Add other properties as needed
-  accessToken?: string;
-}
-
 // Extend the NextAuth types to include your custom session and token properties
 declare module 'next-auth' {
+  interface User {
+    _id: string;
+    token: string;
+    // Add other properties as needed
+  }
   interface Session {
     user: User; // Custom user type
     accessToken: string; // The access token

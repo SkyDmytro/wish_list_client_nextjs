@@ -15,7 +15,6 @@ export const isFriends = (
   if (!authUser) {
     return null;
   }
-  console.log(currentUser);
   if (authUser.status === 'loading') return null;
   if (authUser.status === 'unauthenticated') return null;
   if (authUser.data?.user?._id === currentUser._id) return null;

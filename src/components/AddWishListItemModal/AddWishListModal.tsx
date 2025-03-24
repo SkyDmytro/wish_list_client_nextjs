@@ -1,7 +1,7 @@
 'use client';
 
 import { GiftType } from '@/types/types';
-import { currencyType } from '@/types/wishList';
+import { currencyType } from '@/types/types';
 
 import { ChangeEvent, useCallback, useState } from 'react';
 
@@ -19,9 +19,10 @@ const giftSchema = z.object({
   price: z.number().min(0, { message: 'Price must be non-negative' }),
   url: z.string().url({ message: 'Must be a valid URL' }),
   priority: z.enum(['High', 'Medium', 'Low']),
+  reservedBy: z.string().optional().nullable(),
 });
 
-export const AddWishlistModal = ({
+export const AddWishlistItemModal = ({
   closeModal,
   isOpen,
   onAddGift,
@@ -36,6 +37,7 @@ export const AddWishlistModal = ({
     url: '',
     priority: 'Low',
     currency: 'USD',
+    reservedBy: null,
   });
   const [errors, setErrors] = useState<Partial<Record<keyof GiftType, string>>>(
     {},
@@ -67,6 +69,7 @@ export const AddWishlistModal = ({
         url: '',
         priority: 'Low',
         currency: 'USD',
+        reservedBy: null,
       });
       setErrors({});
     }
@@ -93,7 +96,9 @@ export const AddWishlistModal = ({
       title="Add new Gift"
       actions={
         <Button
-          onClick={handleAddGift}
+          onClick={() => {
+            handleAddGift();
+          }}
           className="mt-4 bg-purple-600 hover:bg-purple-700 w-full"
         >
           Add Gift

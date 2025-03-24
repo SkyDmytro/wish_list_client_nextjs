@@ -60,8 +60,8 @@ export const useWishList = ({
     openModal: openAddUserToWishListModal,
   } = useModal();
   const [sortOptions, setSortOptions] = useState<sortOptions>({
-    sortBy: 'priority',
-    sortOrder: 'asc',
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
   });
 
   const reserveGiftRequestWithToast = withToastAsync(

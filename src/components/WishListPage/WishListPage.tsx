@@ -4,7 +4,7 @@ import { GiftItem, wishList } from '@/types/wishList';
 
 import { useState } from 'react';
 
-import { Bookmark, ChevronLeft, ChevronRight, Plus, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { User } from 'next-auth';
 import { useSession } from 'next-auth/react';
 
@@ -15,6 +15,7 @@ import { EditGiftModal } from '../EditGiftModal/EditGiftModal';
 import { Button } from '../ui/button';
 import { useWishList } from './hooks/useWishList';
 import { WishListItemsTable } from './ui/WIshListItemsTable/WishListItemsTable';
+import { WishListTableHeader } from './ui/WishListTableHeader/WishListTableHeader';
 
 export const WishListPage = ({
   giftsProps,
@@ -100,46 +101,13 @@ export const WishListPage = ({
         }}
       />
 
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold text-white">
-            {wishList.title}
-          </h2>
-          <p className="text-slate-400 mt-2">
-            {totalItems} items •{' '}
-            {new Intl.DateTimeFormat('en-GB', {
-              dateStyle: 'medium',
-            }).format(new Date(wishList.createdAt || ''))}
-          </p>
-        </div>
-        {isOwner ? (
-          <div className="flex self-end gap-4 sm:flex-col md:flex-row">
-            {wishList.access === 'private' && (
-              <Button
-                className="bg-purple-600 hover:bg-purple-700"
-                onClick={openAddUserToWishListModal}
-              >
-                <Users className="mr-2 h-4 w-4" />
-                Add User
-              </Button>
-            )}
-            <Button
-              className="bg-purple-600 hover:bg-purple-700"
-              onClick={openCreateGiftModal}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Gift
-            </Button>
-          </div>
-        ) : (
-          <>
-            <Button className="bg-purple-600 hover:bg-purple-700">
-              <Bookmark className="mr-2 h-4 w-4" />
-              Add to Favorites
-            </Button>
-          </>
-        )}
-      </div>
+      <WishListTableHeader
+        wishList={wishList}
+        totalItems={totalItems}
+        isOwner={isOwner}
+        openAddUserToWishListModal={openAddUserToWishListModal}
+        openCreateGiftModal={openCreateGiftModal}
+      />
 
       <div className="rounded-lg border border-slate-800 bg-slate-900/50">
         <WishListItemsTable
@@ -164,6 +132,7 @@ export const WishListPage = ({
           }}
         />
       </div>
+
       <div className="mt-6 flex items-center justify-between">
         <div className="text-sm text-gray-400">
           Showing {(currentPage - 1) * pagination.pageSize + 1} to{' '}

@@ -22,7 +22,7 @@ export const editWishListRequest = async (
   id: string,
   wishList: editWishListRequestBodyType,
   token?: string,
-) => {
+): Promise<WishListResponse> => {
   return putRequest<editWishListRequestBodyType, WishListResponse>(
     `${wishlistUrl}/`,
     wishList,

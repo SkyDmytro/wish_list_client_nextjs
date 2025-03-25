@@ -77,10 +77,10 @@ export const useWishLists = (
     fetchWishlists();
   }, [currentPage, session?.accessToken]);
 
-  const wishlistTableActions: actionsType[] = useMemo(
+  const wishlistTableActions: actionsType<wishList>[] = useMemo(
     () => [
       {
-        component: (
+        component: () => (
           <Button
             variant="ghost"
             className="text-slate-400 hover:bg-slate-700 hover:text-slate-300 w-full flex justify-start"
@@ -96,7 +96,7 @@ export const useWishLists = (
         isVisible: () => true,
       },
       {
-        component: (
+        component: () => (
           <Button
             variant="ghost"
             className=" text-slate-400 hover:bg-slate-700 hover:text-slate-300 w-full flex justify-start"
@@ -112,7 +112,7 @@ export const useWishLists = (
         isVisible: () => isUserTheOwner,
       },
       {
-        component: (
+        component: () => (
           <Button
             variant="destructive"
             className="bg-red-500 text-white w-full flex justify-start"
@@ -170,7 +170,7 @@ export const useWishLists = (
       onCloseEditWishlistModal();
       setCurrentWishLists((prev) =>
         prev.map((wishlist) => {
-          if (wishlist._id === result._id) {
+          if (wishlist._id === (result as wishList)._id) {
             const newWl: wishList = {
               ...wishlist,
               ...(result as wishList),
@@ -190,6 +190,7 @@ export const useWishLists = (
 
   const handeDeleteWishList = async () => {
     if (!wishListToDelete) return;
+    if (!session) return;
 
     const reqBody = {
       wishListId: wishListToDelete?._id,

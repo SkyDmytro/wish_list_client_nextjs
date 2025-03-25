@@ -16,7 +16,7 @@ export const WishListItemsTableActionsDropDown = ({
   item,
 }: {
   item: GiftItem;
-  actions: actionsType[];
+  actions: actionsType<GiftItem>[];
 }) => {
   return (
     <DropdownMenu>

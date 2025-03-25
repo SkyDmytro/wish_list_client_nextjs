@@ -16,7 +16,7 @@ export const WishListsTableActionsDropDown = ({
   wishlist,
 }: {
   wishlist: wishList;
-  actions: actionsType[];
+  actions: actionsType<wishList>[];
 }) => {
   return (
     <DropdownMenu>
@@ -42,7 +42,7 @@ export const WishListsTableActionsDropDown = ({
               key={index}
               onClick={action.onClick(wishlist)}
             >
-              {action.component}
+              {action.component(wishlist)}
             </DropdownMenuItem>
           );
         })}

@@ -41,8 +41,8 @@ export const UserPage = ({
             <FriendActions
               authUser={authUser}
               user={user}
-              handleAddFriend={handleAddFriend}
-              handleRemoveFriend={handleRemoveFriend}
+              onAddFriend={handleAddFriend}
+              onRemoveFriend={handleRemoveFriend}
             />
           )}
           avatar={user.avatar || ''}

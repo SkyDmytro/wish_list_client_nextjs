@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { UserType } from '@/types/user';
 
+import { useState } from 'react';
+
 import { UserMinus, UserPlus } from 'lucide-react';
 import { SessionContextValue } from 'next-auth/react';
 
@@ -9,15 +11,33 @@ import { isFriends } from '../helpers/helpers';
 export const FriendActions = ({
   authUser,
   user,
-  handleAddFriend,
-  handleRemoveFriend,
+  onAddFriend,
+  onRemoveFriend,
 }: {
   authUser: SessionContextValue;
   user: UserType;
-  handleAddFriend: () => Promise<void>;
-  handleRemoveFriend: () => Promise<void>;
+  onAddFriend: () => Promise<void>;
+  onRemoveFriend: () => Promise<void>;
 }) => {
-  const isFriend = isFriends(authUser, user);
+  const [isFriend, setIsFriend] = useState(isFriends(authUser, user));
+
+  const handleRemoveFriend = async () => {
+    try {
+      await onRemoveFriend();
+      setIsFriend('not-friends');
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleAddFriend = async () => {
+    try {
+      await onAddFriend();
+      setIsFriend('friends');
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   if (isFriend === 'friends') {
     return (

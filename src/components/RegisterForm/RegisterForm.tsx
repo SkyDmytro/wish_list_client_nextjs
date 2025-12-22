@@ -1,8 +1,7 @@
 'use client';
 
-import { registerUserRequest } from '@/api/register/registerUserRequest';
+import { registerSchema } from '@/features/auth/schemas/userRegister.schema';
 import { useToast } from '@/hooks/use-toast';
-import { registerSchema } from '@/schemas/userRegister.schema';
 
 import { FormEvent, useState } from 'react';
 
@@ -34,14 +33,36 @@ export const RegisterForm = () => {
     }
 
     try {
-      await registerUserRequest(parsed.data);
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
       toast({
         title: 'Success',
         description: 'User registered successfully, please log in',
       });
       router.push(`/login`);
     } catch (e) {
-      throw new Error(e instanceof Error ? e.message : 'An error occurred');
+      // Handle error display - could be improved to show specific field errors if API returns them
+      console.error(e);
+      toast({
+        title: 'Error',
+        description:
+          e instanceof Error
+            ? e.message
+            : 'An error occurred during registration',
+        variant: 'destructive',
+      });
     }
   }
   return (

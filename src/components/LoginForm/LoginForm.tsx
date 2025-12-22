@@ -3,16 +3,17 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { loginSchema } from '@/schemas/userLogin.schema';
+import { authApi } from '@/features/auth/api/auth';
+import { loginSchema } from '@/features/auth/schemas/userLogin.schema';
 
 import { FormEvent, useState } from 'react';
 
-import { signIn } from 'next-auth/react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function LoginForm() {
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const searchParams = useSearchParams();
+  const router = useRouter();
   const error = searchParams.get('error');
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -31,18 +32,14 @@ export default function LoginForm() {
     }
 
     try {
-      // const response = await loginUserRequest(parsed.data);
-      await signIn('credentials', {
-        email: email,
-        password: password,
-        // redirect: '/users/',
-      });
+      const response = await authApi.login(parsed.data);
+      router.push('/users/' + response.user.id);
     } catch (e) {
       setErrors({
         email: ['Invalid email or password'],
         password: ['Invalid email or password'],
       });
-      console.log(e);
+      console.error(e);
     }
   }
 

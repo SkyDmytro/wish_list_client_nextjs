@@ -5,14 +5,15 @@ import {
 } from '@/api/wishListsRequests/wishListsRequests';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { UserType } from '@/types/user';
+import { UserType } from '@/entities/user/types/user';
 import { wishList } from '@/types/wishList';
 import { debounced } from '@/utils/debounce';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { createBrowserClient } from '@supabase/ssr';
+import { Session } from '@supabase/supabase-js';
 import { PlusCircle, Search, User } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 
 import { UsersWithAccess as UsersWithAccessComponent } from './UsersWithAccess';
 
@@ -26,7 +27,25 @@ export const DropDownUserSearch = ({
   const [UsersWithAccess, setUsersWithAccess] = useState<UserType[]>(
     currentWishList.usersWithAccess,
   );
-  const authUser = useSession().data?.user;
+  const [session, setSession] = useState<Session | null>(null);
+
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+  );
+
+  useEffect(() => {
+    const getSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setSession(session);
+    };
+    getSession();
+  }, [supabase.auth]);
+
+  const authUserToken = session?.access_token;
+
   const handleInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -35,7 +54,7 @@ export const DropDownUserSearch = ({
 
   const handleAddUser = async (user: UserType) => {
     try {
-      await addUserToWishList(currentWishList._id, user._id, authUser?.token);
+      await addUserToWishList(currentWishList._id, user._id, authUserToken);
       setUsersWithAccess((prev) => [...prev, user]);
     } catch (error) {
       console.log(error);
@@ -47,7 +66,7 @@ export const DropDownUserSearch = ({
       await deleteUserFromWishList(
         currentWishList._id,
         user._id,
-        authUser?.token,
+        authUserToken,
       );
       setUsersWithAccess((prev) => prev.filter((u) => u._id !== user._id));
     } catch (e) {
@@ -55,24 +74,25 @@ export const DropDownUserSearch = ({
     }
   };
 
-  const handleSearch = async () => {
-    if (!authUser) return;
+  /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  const handleSearch = useCallback(async () => {
+    if (!session) return;
     if (inputValue === '') return;
-    const res = await searchUser(inputValue, authUser?.token || '');
+    const res = await searchUser(inputValue, authUserToken || '');
     if (res) {
       console.log(res);
       setUsers(res as UserType[]);
     }
-  };
+  }, [session, authUserToken, inputValue]);
 
-  const debouncedSearch = debounced<unknown[], Promise<void>>(
-    handleSearch,
-    1000,
+  const debouncedSearch = useMemo(
+    () => debounced<unknown[], Promise<void>>(handleSearch, 1000),
+    [handleSearch],
   );
 
   useEffect(() => {
     debouncedSearch();
-  }, [inputValue]);
+  }, [inputValue, debouncedSearch]);
 
   return (
     <div className="min-h-2/3">

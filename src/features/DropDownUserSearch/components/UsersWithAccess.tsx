@@ -1,6 +1,6 @@
 'use client';
 
-import { UserType } from '@/types/user';
+import { UserType } from '@/entities/user/types/user';
 
 import { User, X } from 'lucide-react';
 

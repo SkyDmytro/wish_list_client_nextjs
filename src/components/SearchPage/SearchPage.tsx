@@ -1,12 +1,11 @@
 'use client';
 
-import { searchUser } from '@/api/searsUser/searchUser';
-import { UserType } from '@/types/user';
+import { usersApi } from '@/entities/user';
+import { UserType } from '@/entities/user/types/user';
 
 import { useState } from 'react';
 
 import { SearchIcon } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 import { Button } from '../ui/button';
@@ -22,7 +21,6 @@ export const SearchPage = ({
 }) => {
   const [inputValue, setInputValue] = useState(inputValueProps);
   const [users, setUsers] = useState<UserType[]>(usersProps);
-  const authUser = useSession().data?.user;
 
   const handleInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -36,10 +34,9 @@ export const SearchPage = ({
   };
 
   const handleSearch = async () => {
-    if (!authUser) return;
     if (!inputValue) return;
-    const res = await searchUser(inputValue, authUser?.token || '');
-    setUsers(res as UserType[]);
+    const res = await usersApi.getUsers(inputValue);
+    setUsers(res.data);
   };
 
   return (
@@ -64,8 +61,8 @@ export const SearchPage = ({
       </div>
       {users.length === 0 && <p className="text-gray-400">No users found</p>}
       {users.map((user) => (
-        <Link key={user._id} href={`/users/${user._id}`} className="w-1/2 mb-2">
-          <UserCard key={user._id} name={user.name} />
+        <Link key={user.id} href={`/users/${user.id}`} className="w-1/2 mb-2">
+          <UserCard key={user.id} name={user.name} />
         </Link>
       ))}
     </div>

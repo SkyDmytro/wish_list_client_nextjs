@@ -2,15 +2,13 @@
 
 import { ModalInput } from '@/components/ui/ModalInput';
 import { Button } from '@/components/ui/button';
+import { UserType } from '@/entities/user/types/user';
 
 import { Label } from '@radix-ui/react-label';
 import { LogOut, Settings } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 
-export const UserBlock = () => {
-  const authUser = useSession();
-
-  if (authUser === null || authUser.status === 'loading') return null;
+export const UserBlock = ({ user }: { user?: UserType }) => {
+  if (!user) return null;
 
   return (
     <div className="border border-gray-800 p-6 rounded-lg">
@@ -31,7 +29,7 @@ export const UserBlock = () => {
               labelText="Username"
               inputId="username"
               inputType="text"
-              inputValue={authUser.data?.user?.name ?? ''}
+              inputValue={user?.name ?? ''}
               className="border-gray-700"
             />
           </div>
@@ -42,7 +40,7 @@ export const UserBlock = () => {
               labelText="Email Address"
               inputId="email"
               inputType="email"
-              inputValue={authUser.data?.user?.email.toString() ?? ''}
+              inputValue={user?.email ?? ''}
               className="border-gray-700"
             />
           </div>

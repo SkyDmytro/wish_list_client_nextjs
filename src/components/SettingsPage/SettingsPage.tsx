@@ -1,7 +1,7 @@
 'use client';
 
+import { UserType } from '@/entities/user/types/user';
 import { cn } from '@/lib/cn';
-import { UserType } from '@/types/user';
 import { isUnderDevelopment } from '@/utils/helpers';
 
 import { ReactNode, useMemo, useState } from 'react';
@@ -14,14 +14,14 @@ import { UserBlock } from './ui/UserBlock';
 
 type SettingsBlockType = 'user' | 'privacy';
 
-export const SettingsPage = ({}: { user: UserType }) => {
+export const SettingsPage = ({ userProps }: { userProps: UserType }) => {
   const SettingsBlockToComponent: Record<SettingsBlockType, ReactNode> =
     useMemo(
       () => ({
-        user: <UserBlock />,
+        user: <UserBlock user={userProps} />,
         privacy: <PrivacyBlock />,
       }),
-      [],
+      [userProps],
     );
 
   const [currentBlock, setCurrentBlock] = useState<SettingsBlockType>('user');

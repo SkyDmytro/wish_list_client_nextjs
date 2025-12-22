@@ -1,27 +1,23 @@
-import { getRequest } from '@/api/requests';
-import { auth } from '@/auth/authSetup';
 import { FriendsPage } from '@/components/FriendsPage/FriendsPage';
-import { FriendResponse } from '@/types/user';
-import { API_URL } from '@/utils/config';
+import { friendsApi } from '@/features/friends';
 
 const page = async ({ params }: { params: { id: string } }) => {
-  const session = await auth();
   const { id: userId } = await params;
 
-  const friends = await getRequest<FriendResponse>(
-    `${API_URL}/api/users/${userId}/friends?page=1&pageSize=3`,
-    session?.user?.token,
-  )
-    .then((res) => res)
+  const friends = await friendsApi
+    .getFriends(userId, 1, 3)
+    .then((res) => {
+      return res;
+    })
     .catch((e) => {
       console.log(e);
       return {
         items: {
           friends: [],
-          friendsRequestsSent: [],
-          friendsRequestsReceived: [],
+          requestsReceived: [],
+          requestsSent: [],
         },
-        meta: { total: 0, page: 0, totalPages: 0 },
+        total: 0,
       };
     });
 

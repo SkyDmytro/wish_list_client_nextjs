@@ -1,18 +1,18 @@
 import { SettingsPage } from '@/components/SettingsPage/SettingsPage';
-import { UserType } from '@/types/user';
+import { UserType } from '@/entities/user/types/user';
 
 export const Page = () => {
   const user: UserType = {
-    _id: '1',
+    id: '1',
     name: 'skael',
     email: 'skael@gmail.com',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    friendsRequestsReceived: [],
-    friendsRequestsSent: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    friends_requests_received: [],
+    friends_requests_sent: [],
     friends: [],
-    __v: 0,
+    avatar: null,
   };
-  return <SettingsPage user={user} />;
+  return <SettingsPage userProps={user} />;
 };
 export default Page;
